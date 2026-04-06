@@ -8,7 +8,7 @@ Features:
 - [Morphological Symmetries](https://arxiv.org/pdf/2403.17320) 
 - Identification of robot parameters for sim2real using [pace](https://github.com/leggedrobotics/pace-sim2real) via our repo [sim2real-robot-identification](https://github.com/iit-DLSLab/sim2real-robot-identification)
 - Sim-to-Sim in [Mujoco](https://github.com/google-deepmind/mujoco)
-- Sim-to-Real in ROS1 and ROS2 
+- Sim-to-Real using ROS2 
 
 Real-world deployment via:
 - [unitree-ros2-dls](https://github.com/iit-DLSLab/unitree-ros2-dls) for unitree robot communication
