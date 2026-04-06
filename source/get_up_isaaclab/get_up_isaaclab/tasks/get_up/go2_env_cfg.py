@@ -248,7 +248,7 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
 
     
     # Tracking reward scale
-    orientation_reward_scale = -5.0
+    orientation_reward_scale = -1.0
     height_reward_scale = 1.0
     
     # Joint reward scale
