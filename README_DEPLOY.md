@@ -4,7 +4,7 @@
 
 1. install [miniforge](https://github.com/conda-forge/miniforge/releases) (x86_64 or arm64 depending on your platform)
 
-2. create an environment using the file in the folder [deploy/installation](https://github.com/iit-DLSLab/basic-locomotion-dls-isaaclab/tree/main/deploy/installation):
+2. create an environment using the file in the folder [deploy/installation](https://github.com/iit-DLSLab/get-up-dls-isaaclab/tree/main/deploy/installation):
 
 
 ```bash

@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 """
-Ant locomotion environment.
+Ant getup environment.
 """
 
 import gymnasium as gym
@@ -14,15 +14,15 @@ from . import agents
 ##
 # Register Gym environments.
 ##
-from .locomotion_env import LocomotionEnv
+from .getup_env import GetUpEnv
 
 
 # Aliengo environments
-from .locomotion_env import AliengoFlatEnvCfg, AliengoRoughVisionEnvCfg, AliengoRoughBlindEnvCfg
+from .getup_env import AliengoFlatEnvCfg, AliengoRoughVisionEnvCfg, AliengoRoughBlindEnvCfg
 
 gym.register(
     id="GetUp-Aliengo-Flat",
-    entry_point=LocomotionEnv,
+    entry_point=GetUpEnv,
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": AliengoFlatEnvCfg,
@@ -32,7 +32,7 @@ gym.register(
 
 gym.register(
     id="GetUp-Aliengo-Rough-Blind",
-    entry_point=LocomotionEnv,
+    entry_point=GetUpEnv,
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": AliengoRoughBlindEnvCfg,
@@ -40,23 +40,13 @@ gym.register(
     },
 )
 
-gym.register(
-    id="GetUp-Aliengo-Rough-Vision",
-    entry_point=LocomotionEnv,
-    disable_env_checker=True,
-    kwargs={
-        "env_cfg_entry_point": AliengoRoughVisionEnvCfg,
-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:RoughPPORunnerCfg",
-    },
-)
-
 
 # Go2 environments
-from .locomotion_env import Go2FlatEnvCfg, Go2RoughVisionEnvCfg, Go2RoughBlindEnvCfg
+from .getup_env import Go2FlatEnvCfg, Go2RoughVisionEnvCfg, Go2RoughBlindEnvCfg
 
 gym.register(
     id="GetUp-Go2-Flat",
-    entry_point=LocomotionEnv,
+    entry_point=GetUpEnv,
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": Go2FlatEnvCfg,
@@ -66,7 +56,7 @@ gym.register(
 
 gym.register(
     id="GetUp-Go2-Rough-Blind",
-    entry_point=LocomotionEnv,
+    entry_point=GetUpEnv,
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": Go2RoughBlindEnvCfg,
@@ -74,23 +64,14 @@ gym.register(
     },
 )
 
-gym.register(
-    id="GetUp-Go2-Rough-Vision",
-    entry_point=LocomotionEnv,
-    disable_env_checker=True,
-    kwargs={
-        "env_cfg_entry_point": Go2RoughVisionEnvCfg,
-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:RoughPPORunnerCfg",
-    },
-)
 
 
 # B2 environments
-from .locomotion_env import B2FlatEnvCfg, B2RoughVisionEnvCfg, B2RoughBlindEnvCfg
+from .getup_env import B2FlatEnvCfg, B2RoughVisionEnvCfg, B2RoughBlindEnvCfg
 
 gym.register(
     id="GetUp-B2-Flat",
-    entry_point=LocomotionEnv,
+    entry_point=GetUpEnv,
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": B2FlatEnvCfg,
@@ -100,7 +81,7 @@ gym.register(
 
 gym.register(
     id="GetUp-B2-Rough-Blind",
-    entry_point=LocomotionEnv,
+    entry_point=GetUpEnv,
     disable_env_checker=True,
     kwargs={
         "env_cfg_entry_point": B2RoughBlindEnvCfg,
@@ -108,12 +89,3 @@ gym.register(
     },
 )
 
-gym.register(
-    id="GetUp-B2-Rough-Vision",
-    entry_point=LocomotionEnv,
-    disable_env_checker=True,
-    kwargs={
-        "env_cfg_entry_point": B2RoughVisionEnvCfg,
-        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:RoughPPORunnerCfg",
-    },
-)

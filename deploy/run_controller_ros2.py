@@ -314,7 +314,7 @@ class ControllerROS2(Node):
 #---------------------------
 if __name__ == '__main__':
     
-    print('Hello from basic-locomotion-dls-isaaclab ros node.')
+    print('Hello from get-up-dls-isaaclab ros node.')
     
     rclpy.init()
     controller_ros2_node = ControllerROS2()

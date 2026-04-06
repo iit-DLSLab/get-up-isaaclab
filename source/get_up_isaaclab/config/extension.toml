@@ -11,7 +11,7 @@ title = "DLS Locomotion Isaac Lab Extension"
 author = "DLS team"
 maintainer = "DLS slaves"
 description="Isaac Lab extension from the Dynamic Legged Systems (DLS) team at Italian Institute of Technology (IIT)"
-repository = "https://github.com/iit-DLSLab/basic-locomotion-dls-isaaclab/"
+repository = "https://github.com/iit-DLSLab/get-up-dls-isaaclab/"
 keywords = ["extension", "template", "isaaclab"]
 
 [dependencies]

@@ -29,13 +29,13 @@ python scripts/rsl_rl/train.py --task=Locomotion-Aliengo-Flat --num_envs=4096 --
 python scripts/rsl_rl/train.py --task=Locomotion-Aliengo-Rough-Blind --num_envs=4096 --headless
 ```
 
-- To train with Symmetries, modify the related [rsl_rl_ppo_cfg.py](https://github.com/iit-DLSLab/basic-locomotion-dls-isaaclab/blob/devel/source/get_up_isaaclab/get_up_isaaclab/tasks/locomotion/agents/rsl_rl_ppo_cfg.py) setting *class_name = PPOSymmDataAugmented*
+- To train with Symmetries, modify the related [rsl_rl_ppo_cfg.py](https://github.com/iit-DLSLab/get-up-dls-isaaclab/blob/devel/source/get_up_isaaclab/get_up_isaaclab/tasks/getup/agents/rsl_rl_ppo_cfg.py) setting *class_name = PPOSymmDataAugmented*
 ```bash
 python scripts/morphosymm_rl/train_symm.py --task=Locomotion-Aliengo-Flat --num_envs=4096 --headless
 python scripts/morphosymm_rl/train_symm.py --task=Locomotion-Aliengo-Rough-Blind --num_envs=4096 --headless
 ```
 
-- To train with AMP, modify the related [rsl_rl_ppo_cfg.py](https://github.com/iit-DLSLab/basic-locomotion-dls-isaaclab/blob/devel/source/get_up_isaaclab/get_up_isaaclab/tasks/locomotion/agents/rsl_rl_ppo_cfg.py) setting *class_name = AMP_PPO*
+- To train with AMP, modify the related [rsl_rl_ppo_cfg.py](https://github.com/iit-DLSLab/get-up-dls-isaaclab/blob/devel/source/get_up_isaaclab/get_up_isaaclab/tasks/getup/agents/rsl_rl_ppo_cfg.py) setting *class_name = AMP_PPO*
 ```bash. **You need for this to install rsl-rl v3.1.2**
 python scripts/amp_rl/train_amp.py --task=Locomotion-Aliengo-Flat --num_envs=4096 --headless
 python scripts/amp_rl/train_amp.py --task=Locomotion-Aliengo-Rough-Blind --num_envs=4096 --headless

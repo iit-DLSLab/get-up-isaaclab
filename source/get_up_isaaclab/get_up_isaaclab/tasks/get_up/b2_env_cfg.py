@@ -229,7 +229,7 @@ class B2FlatEnvCfg(DirectRLEnvCfg):
         debug_vis=False,
     )
 
-    # we add a height scanner for perceptive locomotion
+    # we add a height scanner for perceptive getup
     height_scanner = RayCasterCfg(
         prim_path="/World/envs/env_.*/Robot/base",
         offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.0)),
@@ -386,23 +386,4 @@ class B2RoughBlindEnvCfg(B2FlatEnvCfg):
             project_uvw=True,
         ),
         debug_vis=False,
-    )
-
-
-
-
-@configclass
-class B2RoughVisionEnvCfg(B2FlatEnvCfg):
-    # env
-    observation_space = 429
-
-    # we add a height scanner for perceptive locomotion
-    height_scanner = RayCasterCfg(
-        prim_path="/World/envs/env_.*/Robot/base",
-        offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.0)),
-        #attach_yaw_only=True,
-        ray_alignment='yaw',
-        pattern_cfg=patterns.GridPatternCfg(resolution=0.1, size=[1.2, 1.2]),
-        debug_vis=False,
-        mesh_prim_paths=["/World/ground"],
     )

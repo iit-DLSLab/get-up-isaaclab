@@ -1,4 +1,4 @@
-# Description: Wrapper of the locomotion policy
+# Description: Wrapper of the getup policy
 
 # Authors:
 # Giulio Turrisi
