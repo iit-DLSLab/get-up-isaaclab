@@ -123,20 +123,15 @@ class EventCfg:
 
 @configclass
 class B2FlatEnvCfg(DirectRLEnvCfg):
-    # Viewer
-    #viewer = ViewerCfg(eye=(1.5, 1.5, 0.3), origin_type="world", env_index=0, asset_name="robot")
 
     # env
     episode_length_s = 20.0
     decimation = 4
     action_scale = 0.5
     action_space = 12
-    observation_space = 48
+    observation_space = 45
     state_space = 0
 
-    use_clock_signal = True
-    if(use_clock_signal):
-        observation_space += 4
 
     # observation history
     use_observation_history = True
@@ -152,8 +147,8 @@ class B2FlatEnvCfg(DirectRLEnvCfg):
         concurrent_state_est_output_space = 3 #lin_vel_b
         single_concurrent_state_est_observation_space = single_observation_space
         concurrent_state_est_observation_space = observation_space
-        concurrent_state_est_batch_size = 32
-        concurrent_state_est_train_epochs = 500
+        concurrent_state_est_batch_size = 512
+        concurrent_state_est_train_epochs = 1000
         concurrent_state_est_lr = 1e-3
         concurrent_state_est_ep_saving_interval = 1000
         concurrent_state_est_ep_saving_start = 6000
@@ -162,44 +157,32 @@ class B2FlatEnvCfg(DirectRLEnvCfg):
     if(use_rma):
         rma_output_space = 12 # P gain
         rma_output_space += 12 # D gain 
-        rma_output_space += 12 # friction static
-        rma_output_space += 12 # friction dynamic
-        rma_output_space += 12 # armature
         single_rma_observation_space = single_observation_space
         rma_observation_space = observation_space
         observation_space += rma_output_space
-        rma_batch_size = 32
-        rma_train_epochs = 500
+        rma_batch_size = 512
+        rma_train_epochs = 1000
         rma_lr = 1e-3
         rma_ep_saving_interval = 1000
         rma_ep_saving_start = 6000
         
-
+    
     use_filter_actions = True
 
     
     # asymmetric ppo
-    use_asymmetric_ppo = False
+    use_asymmetric_ppo = True
     if(use_asymmetric_ppo):
         state_space = observation_space
-        #state_space += 12 # P gain
-        #state_space += 12 # D gain
-        #state_space += 1*17 # mass*num_bodies
-        #state_space += 1*17 # inertia*num_bodies
-        #state_space += 1 # wrench
-        #state_space += 12 # friction static
-        #state_space += 12 # friction dynamic
-        #state_space += 12 # armature
-        #state_space += 1 # restitution
         state_space += 2 #base pitch and height
         state_space += 3 #clean lin vel b
         state_space += 4 #contacts foot
 
-    use_amp = False
 
     observation_base_linear_scale = 1.0
     observation_base_ang_vel_scale = 1.0
-    observation_joint_vel_scale = 1.0
+    observation_joint_vel_scale = 0.1
+
 
 
     # simulation
@@ -213,6 +196,10 @@ class B2FlatEnvCfg(DirectRLEnvCfg):
             static_friction=1.0,
             dynamic_friction=1.0,
             restitution=0.0,
+        ),
+        physx=PhysxCfg(
+            gpu_max_rigid_patch_count=2**23,
+            #gpu_max_rigid_patch_count= 5 * 2 ** 16,
         ),
     )
     terrain = TerrainImporterCfg(
@@ -233,16 +220,19 @@ class B2FlatEnvCfg(DirectRLEnvCfg):
     height_scanner = RayCasterCfg(
         prim_path="/World/envs/env_.*/Robot/base",
         offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.0)),
-        #attach_yaw_only=True,
         ray_alignment='yaw',
-        #pattern_cfg=patterns.GridPatternCfg(resolution=0.2, size=[1.4, 1.0]),
         pattern_cfg=patterns.GridPatternCfg(resolution=0.2, size=[0.6, 0.6]),
         debug_vis=False,
         mesh_prim_paths=["/World/ground"],
     )
 
-    # an imu sensor in case we don't want any state estimator
-    imu = ImuCfg(prim_path="/World/envs/env_.*/Robot/base", debug_vis=True)
+    # an imu sensor in case we don't want any state estimator (for now we can't use sites from the xml)
+    imu = ImuCfg(
+        prim_path="/World/envs/env_.*/Robot/base", 
+        offset=ImuCfg.OffsetCfg(
+            pos=(-0.02557, 0, 0.04232)
+        ), 
+        debug_vis=False)
 
 
     # scene
@@ -259,15 +249,16 @@ class B2FlatEnvCfg(DirectRLEnvCfg):
     )
     # at every time-step add gaussian noise + bias. The bias is a gaussian sampled at reset
     observation_noise_model: NoiseModelWithAdditiveBiasCfg = NoiseModelWithAdditiveBiasCfg(
-        noise_cfg=GaussianNoiseCfg(mean=0.0, std=0.002, operation="add"),
-        bias_noise_cfg=GaussianNoiseCfg(mean=0.0, std=0.0001, operation="abs"),
+        noise_cfg=GaussianNoiseCfg(mean=0.0, std=0.02, operation="add"),
+        bias_noise_cfg=GaussianNoiseCfg(mean=0.0, std=0.001, operation="abs"),
     )
 
     # robot
-    robot: ArticulationCfg = B2_CFG.replace(prim_path="/World/envs/env_.*/Robot")
+    robot: ArticulationCfg = GO2_CFG.replace(prim_path="/World/envs/env_.*/Robot")
     contact_sensor: ContactSensorCfg = ContactSensorCfg(
         prim_path="/World/envs/env_.*/Robot/.*", history_length=3, update_period=0.005, track_air_time=True
     )
+
 
     # Desired tracking variables
     desired_base_height = 0.485
@@ -276,30 +267,22 @@ class B2FlatEnvCfg(DirectRLEnvCfg):
     # Desired clip actions
     desired_clip_actions = 3.0
 
-    # Desired step freq and duty factor (if periodic gait is used)
-    desired_step_freq = 1.4
-    desired_duty_factor = 0.65
-    desired_phase_offset = [0.0, 0.5, 0.5, 0.0] #FL, FR, RL, RR
     
     # Tracking reward scale
-    lin_vel_reward_scale = 2.0
-    yaw_rate_reward_scale = 0.5
-    z_vel_reward_scale = -2.0
-    ang_vel_reward_scale = -0.25
     orientation_reward_scale = -5.0
     height_reward_scale = 1.0
     
     # Joint reward scale
-    joints_torque_reward_scale = -2.5e-6
+    joints_torque_reward_scale = -2.5e-6 
     joints_accel_reward_scale = -2.5e-7
     joints_energy_reward_scale = -1e-4
-    joints_hip_position_reward_scale = -0.1
-    joints_thigh_position_reward_scale = -0.1
-    joints_calf_position_reward_scale = -0.001
+    joints_hip_position_reward_scale = -0.1 * 0.0
+    joints_thigh_position_reward_scale = -0.1 * 0.0
+    joints_calf_position_reward_scale = -0.001 * 0.0
    
     
     # Undesired contacts reward scale
-    undersired_contact_reward_scale = -1.0
+    undersired_contact_reward_scale = -1.0 * 0.0
     action_rate_reward_scale = -0.01
     action_smoothness_reward_scale = -0.001
 
@@ -307,20 +290,15 @@ class B2FlatEnvCfg(DirectRLEnvCfg):
     feet_air_time_reward_scale = 0.5 * 0.0
 
     feet_height_clearance_reward_scale = 0.25 * 0.0  
-    feet_height_clearance_periodic_reward_scale = 0.25
-    
     feet_height_clearance_mujoco_reward_scale = 0.25 * 0.0
-    feet_height_clearance_mujoco_periodic_reward_scale = 0.25 * 0.0
-
+    
     feet_slide_reward_scale = -0.25 * 0.0
-    feet_contact_suggestion_reward_scale =  0.25
-    feet_to_base_distance_reward_scale = 0.25 * 0.0
-
+    
     feet_to_hip_distance_reward_scale = 1.5
+
     # This is used in loocmotion_env.py for the above reward
     desired_hip_offset = 0.12
 
-    feet_vertical_surface_contacts_reward_scale = -0.25
 
 
 import isaaclab.terrains as terrain_gen
@@ -343,26 +321,23 @@ class B2RoughBlindEnvCfg(B2FlatEnvCfg):
                 proportion=0.2
             ),
             "boxes": terrain_gen.MeshRandomGridTerrainCfg(
-                proportion=0.1, grid_width=0.45, grid_height_range=(0.05, 0.10), platform_width=2.0,
-            ),
-            "star": terrain_gen.MeshStarTerrainCfg(
-                proportion=0.1, num_bars=10, bar_width_range=(0.15, 0.20), bar_height_range=(0.05, 0.15), platform_width=2.0,
+                proportion=0.1, grid_width=0.45, grid_height_range=(0.02, 0.5), platform_width=2.0,
             ),
             "random_rough": terrain_gen.HfRandomUniformTerrainCfg(
                 proportion=0.1, noise_range=(0.02, 0.06), noise_step=0.02, border_width=0.25
             ),
             "hf_pyramid_slope": terrain_gen.HfPyramidSlopedTerrainCfg(
-                proportion=0.1, slope_range=(0.2, 0.4), platform_width=2.0, border_width=0.25
+                proportion=0.2, slope_range=(0.2, 0.4), platform_width=2.0, border_width=0.25
             ),
             "hf_pyramid_slope_inv": terrain_gen.HfInvertedPyramidSlopedTerrainCfg(
-                proportion=0.1, slope_range=(0.2, 0.4), platform_width=2.0, border_width=0.25
+                proportion=0.2, slope_range=(0.2, 0.4), platform_width=2.0, border_width=0.25
             ),
             "pyramid_stairs": terrain_gen.MeshPyramidStairsTerrainCfg(
-                proportion=0.15, step_height_range=(0.05, 0.18), step_width=0.3,
+                proportion=0.1, step_height_range=(0.05, 0.10), step_width=0.3,
                 platform_width=3.0, border_width=1.0, holes=False,
             ),
             "pyramid_stairs_inv": terrain_gen.MeshInvertedPyramidStairsTerrainCfg(
-                proportion=0.15, step_height_range=(0.05, 0.18), step_width=0.3,
+                proportion=0.1, step_height_range=(0.05, 0.10), step_width=0.3,
                 platform_width=3.0, border_width=1.0, holes=False,
             ),
         },

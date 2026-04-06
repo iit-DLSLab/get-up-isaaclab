@@ -109,7 +109,7 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
     decimation = 4
     action_scale = 0.5
     action_space = 12
-    observation_space = 48
+    observation_space = 45
     state_space = 0
 
 
@@ -122,7 +122,7 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
 
     use_imu = False
 
-    use_concurrent_state_est = True
+    use_concurrent_state_est = False
     if(use_concurrent_state_est):
         concurrent_state_est_output_space = 3 #lin_vel_b
         single_concurrent_state_est_observation_space = single_observation_space
@@ -261,7 +261,7 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
    
     
     # Undesired contacts reward scale
-    undersired_contact_reward_scale = -1.0
+    undersired_contact_reward_scale = -1.0 * 0.0
     action_rate_reward_scale = -0.01
     action_smoothness_reward_scale = -0.001
 

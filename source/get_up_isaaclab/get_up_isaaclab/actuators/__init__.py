@@ -24,10 +24,8 @@ and called by the :class:`isaaclab.assets.Articulation` class.
 
 from .actuator_cfg import (
     IdentifiedActuatorElectricCfg,
-    IdentifiedActuatorHydraulicCfg,
 )
 from .actuator_electric import IdentifiedActuatorElectric
-from .actuator_hydraulic import IdentifiedActuatorHydraulic
 
 from .pace_actuator_cfg import PaceDCMotorCfg
 from .pace_actuator import PaceDCMotor

@@ -23,7 +23,7 @@ from isaaclab.utils import configclass
 
 
 from .aliengo_env_cfg import AliengoFlatEnvCfg, AliengoRoughBlindEnvCfg
-from .go2_env_cfg import Go2FlatEnvCfg, Go2RoughBlindEnvCfgfrom
+from .go2_env_cfg import Go2FlatEnvCfg, Go2RoughBlindEnvCfg
 from .b2_env_cfg import B2FlatEnvCfg, B2RoughBlindEnvCfg
 
 from get_up_isaaclab.tasks.supervised_learning_networks import SimpleNN
@@ -121,13 +121,6 @@ class GetUpEnv(DirectRLEnv):
         self._height_scanner = RayCaster(self.cfg.height_scanner)
         self.scene.sensors["height_scanner"] = self._height_scanner
 
-        # if we came from depth-based env, we create the depth camera scanner
-        if isinstance(self.cfg, AliengoRoughVisionEnvCfg) or isinstance(self.cfg, Go2RoughVisionEnvCfg) or isinstance(self.cfg, HyQRealRoughVisionEnvCfg) or isinstance(self.cfg, B2RoughVisionEnvCfg):
-            # we add a height scanner for the proprioceptive getup
-            self._height_scanner2 = RayCaster(self.cfg.height_scanner2)
-            self.scene.sensors["height_scanner2"] = self._height_scanner2
-
-
         # we add an imu
         self._imu = Imu(self.cfg.imu)
         self.scene.sensors["imu"] = self._imu
@@ -168,10 +161,7 @@ class GetUpEnv(DirectRLEnv):
 
 
     def _get_observations(self) -> dict:
-        
-
-
-        # Observation --------------------------------------------------------------------------------------
+    
 
         # Choosing the main source of observation
         if(self.cfg.use_concurrent_state_est):
@@ -222,7 +212,7 @@ class GetUpEnv(DirectRLEnv):
 
 
         # Final observations dictionary
-        observations["policy"] = obs    
+        observations = {"policy": obs}       
         
 
         # Critic OBS could be different if needed
@@ -232,6 +222,7 @@ class GetUpEnv(DirectRLEnv):
         else:
             observations["critic"] = obs
         # ------------------------------------------------------------------------------------------
+
 
         return observations
 
@@ -358,22 +349,29 @@ class GetUpEnv(DirectRLEnv):
         feet_z_target_error_mujoco = self.cfg.desired_feet_height + torch.cat((mean_height_ray_front.unsqueeze(1).expand(-1, 2), mean_height_ray_back.unsqueeze(1).expand(-1, 2)), dim=1) - self._swing_peak
         feet_z_target_error_mujoco = torch.clamp(feet_z_target_error_mujoco, min=.0, max=self.cfg.desired_feet_height)
 
-        feet_height_clearance_mujoco_FL = torch.exp(-feet_z_target_error_mujoco[:,0]/ 0.01) * should_move
-        feet_height_clearance_mujoco_FR = torch.exp(-feet_z_target_error_mujoco[:,1]/ 0.01) * should_move
-        feet_height_clearance_mujoco_RL = torch.exp(-feet_z_target_error_mujoco[:,2]/ 0.01) * should_move
-        feet_height_clearance_mujoco_RR = torch.exp(-feet_z_target_error_mujoco[:,3]/ 0.01) * should_move
+        feet_height_clearance_mujoco_FL = torch.exp(-feet_z_target_error_mujoco[:,0]/ 0.01)
+        feet_height_clearance_mujoco_FR = torch.exp(-feet_z_target_error_mujoco[:,1]/ 0.01)
+        feet_height_clearance_mujoco_RL = torch.exp(-feet_z_target_error_mujoco[:,2]/ 0.01)
+        feet_height_clearance_mujoco_RR = torch.exp(-feet_z_target_error_mujoco[:,3]/ 0.01)
         #feet_height_clearance_mujoco = torch.sum(torch.square(self._swing_peak / target_height - 1.0) *  first_contact, dim=-1)
         feet_height_clearance_mujoco = feet_height_clearance_mujoco_FL + feet_height_clearance_mujoco_FR
         feet_height_clearance_mujoco += feet_height_clearance_mujoco_RL + feet_height_clearance_mujoco_RR
 
 
         # feet height clearance standard
+        feet_z_target_error = self.cfg.desired_feet_height + torch.cat((mean_height_ray_front.unsqueeze(1).expand(-1, 2), mean_height_ray_back.unsqueeze(1).expand(-1, 2)), dim=1) - self._robot.data.body_pos_w[:, self._feet_ids_robot, 2]
+        # If the raw error is negative, halve it to not discourage too much
+        feet_z_target_error = torch.where(feet_z_target_error < 0.0, feet_z_target_error * 0.2, feet_z_target_error)
+        feet_z_target_error = torch.abs(feet_z_target_error)
+        feet_z_target_error = torch.clamp(feet_z_target_error, min=.0, max=self.cfg.desired_feet_height)
         foot_velocity_tanh = torch.tanh(2.0 * torch.norm(self._robot.data.body_lin_vel_w[:, self._feet_ids_robot, :2], dim=2))
-        feet_height_clearance = torch.exp(-torch.sum(feet_z_target_error * foot_velocity_tanh, dim=1)/ 0.01) * should_move
+        feet_height_clearance = torch.exp(-torch.sum(feet_z_target_error * foot_velocity_tanh, dim=1)/ 0.01)
 
 
 
         # feet to hip distance
+        should_stance = height_error < 0.05
+        
         ROT_W2H = math_utils.matrix_from_quat(math_utils.yaw_quat(self._robot.data.root_quat_w))
         feet_to_base_w = self._robot.data.body_pos_w[:, self._feet_ids_robot, :3] - self._robot.data.root_state_w[:, :3].unsqueeze(1)
         feet_to_base_h = torch.matmul(ROT_W2H.transpose(1,2), feet_to_base_w.transpose(1, 2))
@@ -385,11 +383,8 @@ class GetUpEnv(DirectRLEnv):
         feet_to_hip_distance_x = torch.square(feet_to_base_h[:, 0] - hip_to_base_h[:, 0])
         feet_to_hip_distance_y = torch.square(feet_to_base_h[:, 1] + desired_hip_offset.unsqueeze(0) - hip_to_base_h[:, 1])
         feet_to_hip_distance = -torch.mean(torch.sqrt(feet_to_hip_distance_x + feet_to_hip_distance_y), dim=1)
-        # If should_move is False, multiply the distance by 3 (GPU-friendly, vectorized)
-        # `should_move` is a boolean tensor defined earlier (shape: [num_envs])
-        feet_to_hip_distance = feet_to_hip_distance * torch.where(
-            should_move, torch.ones_like(feet_to_hip_distance), torch.full_like(feet_to_hip_distance, 3.0)
-        )
+        feet_to_hip_distance = torch.exp(feet_to_hip_distance / 0.01) * should_stance
+
 
 
 
@@ -432,10 +427,7 @@ class GetUpEnv(DirectRLEnv):
 
     def _get_dones(self) -> tuple[torch.Tensor, torch.Tensor]:
         time_out = self.episode_length_buf >= self.max_episode_length - 1
-        net_contact_forces = self._contact_sensor.data.net_forces_w_history
-        died_check_base = torch.any(torch.max(torch.norm(net_contact_forces[:, :, self._base_id], dim=-1), dim=1)[0] > 1.0, dim=1)
-        died_check_hips = torch.any(torch.max(torch.norm(net_contact_forces[:, :, self._hip_ids], dim=-1), dim=1)[0] > 1.0, dim=1) 
-        died = torch.logical_or(died_check_base, died_check_hips)
+        died = torch.zeros(self.num_envs, dtype=torch.bool, device=self.device)
         
         return died, time_out
 

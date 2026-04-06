@@ -18,7 +18,7 @@ from .getup_env import GetUpEnv
 
 
 # Aliengo environments
-from .getup_env import AliengoFlatEnvCfg, AliengoRoughVisionEnvCfg, AliengoRoughBlindEnvCfg
+from .getup_env import AliengoFlatEnvCfg, AliengoRoughBlindEnvCfg
 
 gym.register(
     id="GetUp-Aliengo-Flat",
@@ -42,7 +42,7 @@ gym.register(
 
 
 # Go2 environments
-from .getup_env import Go2FlatEnvCfg, Go2RoughVisionEnvCfg, Go2RoughBlindEnvCfg
+from .getup_env import Go2FlatEnvCfg, Go2RoughBlindEnvCfg
 
 gym.register(
     id="GetUp-Go2-Flat",
@@ -67,7 +67,7 @@ gym.register(
 
 
 # B2 environments
-from .getup_env import B2FlatEnvCfg, B2RoughVisionEnvCfg, B2RoughBlindEnvCfg
+from .getup_env import B2FlatEnvCfg, B2RoughBlindEnvCfg
 
 gym.register(
     id="GetUp-B2-Flat",
