@@ -1,0 +1,36 @@
+[package]
+
+# Semantic Versioning is used: https://semver.org/
+version = "0.1.1"
+
+# Description
+category = "isaaclab"
+readme  = "README.md"
+
+title = "DLS Locomotion Isaac Lab Extension"
+author = "DLS team"
+maintainer = "DLS slaves"
+description="Isaac Lab extension from the Dynamic Legged Systems (DLS) team at Italian Institute of Technology (IIT)"
+repository = "https://github.com/iit-DLSLab/basic-locomotion-dls-isaaclab/"
+keywords = ["extension", "template", "isaaclab"]
+
+[dependencies]
+"isaaclab" = {}
+"isaaclab_assets" = {}
+"isaaclab_mimic" = {}
+"isaaclab_rl" = {}
+"isaaclab_tasks" = {}
+# NOTE: Add additional dependencies here
+# TODO: We need to define our isaaclab dependencies here
+
+[[python.module]]
+name = "get_up_isaaclab"
+
+[isaaclab_settings]
+# TODO: Uncomment and list any apt dependencies here.
+#       If none, leave it commented out.
+# apt_deps = ["example_package"]
+# TODO: Uncomment and provide path to a ros_ws
+#       with rosdeps to be installed. If none,
+#       leave it commented out.
+# ros_ws = "path/from/extension_root/to/ros_ws"

@@ -1,0 +1,1 @@
+#TODO all the rewards could be deined here
