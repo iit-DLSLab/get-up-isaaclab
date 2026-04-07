@@ -7,7 +7,7 @@ version = "0.1.1"
 category = "isaaclab"
 readme  = "README.md"
 
-title = "DLS Locomotion Isaac Lab Extension"
+title = "DLS GetUp Isaac Lab Extension"
 author = "DLS team"
 maintainer = "DLS slaves"
 description="Isaac Lab extension from the Dynamic Legged Systems (DLS) team at Italian Institute of Technology (IIT)"

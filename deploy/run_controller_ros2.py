@@ -28,7 +28,7 @@ from gym_quadruped.quadruped_env import QuadrupedEnv
 from gym_quadruped.utils.quadruped_utils import LegsAttr
 
 
-# Locomotion Policy imports
+# GetUp Policy imports
 from get_up_policy_wrapper import GetUpPolicyWrapper
 
 import config

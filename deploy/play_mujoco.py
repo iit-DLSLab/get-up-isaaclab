@@ -20,8 +20,8 @@ from gym_quadruped.utils.quadruped_utils import LegsAttr
 from gym_quadruped.sensors.heightmap import HeightMap
 from gym_quadruped.utils.mujoco.visual import render_sphere
 
-# Locomotion Policy imports
-from locomotion_policy_wrapper import LocomotionPolicyWrapper
+# GetUp Policy imports
+from getup_policy_wrapper import GetUpPolicyWrapper
 
 import config
 
@@ -51,9 +51,9 @@ if __name__ == '__main__':
 
 
     # Initialization of variables used in the main control loop --------------------------------
-    locomotion_policy = LocomotionPolicyWrapper(env=env)
+    getup_policy = GetUpPolicyWrapper(env=env)
 
-    if(locomotion_policy.use_vision):
+    if(getup_policy.use_vision):
         resolution_heightmap = config.training_env["height_scanner2"]["pattern_cfg"]["resolution"]
         num_rows_heightmap = round(config.training_env["height_scanner2"]["pattern_cfg"]["size"][0]/resolution_heightmap) + 1
         num_cols_heightmap = round(config.training_env["height_scanner2"]["pattern_cfg"]["size"][1]/resolution_heightmap) + 1
@@ -100,14 +100,14 @@ if __name__ == '__main__':
         joints_vel.RR = qvel[env.legs_qvel_idx.RR]
         ref_base_lin_vel, ref_base_ang_vel = env.target_base_vel()
 
-        if(locomotion_policy.use_vision):
+        if(getup_policy.use_vision):
             offset_world_frame = heightmap_offset["pos"] @ heading_orientation_SO3.T
             heightmap.update_height_map(env.mjData.qpos[0:3] + offset_world_frame, yaw=env.base_ori_euler_xyz[2])
 
         # RL controller --------------------------------------------------------------
-        if env.step_num % round(1 / (locomotion_policy.RL_FREQ * simulation_dt)) == 0:            
+        if env.step_num % round(1 / (getup_policy.RL_FREQ * simulation_dt)) == 0:            
             
-            desired_joint_pos = locomotion_policy.compute_control(
+            desired_joint_pos = getup_policy.compute_control(
                         base_pos=base_pos, 
                         base_ori_euler_xyz=base_ori_euler_xyz, 
                         base_quat_wxyz=base_quat_wxyz,
@@ -121,15 +121,15 @@ if __name__ == '__main__':
                         imu_linear_acceleration=imu_linear_acceleration,
                         imu_angular_velocity=imu_angular_velocity,
                         imu_orientation=imu_orientation,
-                        heightmap_data=heightmap.data if locomotion_policy.use_vision else None)
+                        heightmap_data=heightmap.data if getup_policy.use_vision else None)
 
         # PD controller --------------------------------------------------------------
         else:
-            desired_joint_pos = locomotion_policy.desired_joint_pos
+            desired_joint_pos = getup_policy.desired_joint_pos
 
 
-        Kp = locomotion_policy.Kp_walking
-        Kd = locomotion_policy.Kd_walking
+        Kp = getup_policy.Kp_walking
+        Kd = getup_policy.Kd_walking
 
         error_joints_pos = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
         error_joints_pos.FL = desired_joint_pos.FL - joints_pos.FL
@@ -164,7 +164,7 @@ if __name__ == '__main__':
             env.render()
             last_render_time = time.time()
 
-            if(locomotion_policy.use_vision):
+            if(getup_policy.use_vision):
                 if heightmap.data is not None:
                     for i in range(heightmap.data.shape[0]):
                         for j in range(heightmap.data.data.shape[1]):
