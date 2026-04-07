@@ -2,7 +2,7 @@
 
 **Work in Progress**
 
-Reinforcement learning implementations for quadruped get-up task in IsaacLab. It includes different robots, and scripts for sim-to-sim and sim-to-real transfer.
+Reinforcement learning implementation of the **quadruped get-up task** in IsaacLab. It includes different robots, with scripts for sim-to-sim and sim-to-real transfer.
 
 Features:
 - [Concurrent State Estimator](https://arxiv.org/pdf/2202.05481)
