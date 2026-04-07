@@ -28,12 +28,6 @@ python scripts/rsl_rl/train.py --task=GetUp-Aliengo-Flat --num_envs=4096 --headl
 python scripts/rsl_rl/train.py --task=GetUp-Aliengo-Rough-Blind --num_envs=4096 --headless
 ```
 
-- To train with Symmetries, modify the related [rsl_rl_ppo_cfg.py](https://github.com/iit-DLSLab/get-up-dls-isaaclab/blob/devel/source/get_up_isaaclab/get_up_isaaclab/tasks/getup/agents/rsl_rl_ppo_cfg.py) setting *class_name = PPOSymmDataAugmented*
-```bash
-python scripts/morphosymm_rl/train_symm.py --task=GetUp-Aliengo-Flat --num_envs=4096 --headless
-python scripts/morphosymm_rl/train_symm.py --task=GetUp-Aliengo-Rough-Blind --num_envs=4096 --headless
-```
-
 
 - To test the policy, you can press:
 ```bash
