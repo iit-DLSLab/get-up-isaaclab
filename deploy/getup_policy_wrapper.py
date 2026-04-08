@@ -56,9 +56,6 @@ class GetUpPolicyWrapper:
         # Observation space initialization -------------------------------------------------------
         self.observation_space = config.training_env["single_observation_space"]
 
-        self.use_clock_signal = config.training_env["use_clock_signal"]
-
-
         self.step_freq = 1.4
         self.duty_factor = 0.65
         self.phase_offset = np.array([0.0, 0.5, 0.5, 0.0])
@@ -120,12 +117,9 @@ class GetUpPolicyWrapper:
             base_ori_euler_xyz, 
             base_quat_wxyz,
             base_lin_vel, 
-            base_ang_vel, 
-            heading_orientation_SO3,
+            base_ang_vel,
             joints_pos, 
             joints_vel,
-            ref_base_lin_vel, 
-            ref_base_ang_vel,
             imu_linear_acceleration=None,
             imu_angular_velocity=None,
             imu_orientation=None,
@@ -142,18 +136,12 @@ class GetUpPolicyWrapper:
             base_ang_vel = base_ang_vel
 
 
-        # Get the reference base velocity in the world frame
-        ref_base_lin_vel_h = heading_orientation_SO3.T@ref_base_lin_vel
-        
-            
         # Fill the observation vector
         joints_pos_delta = joints_pos - self.default_joint_pos
         obs = np.concatenate([
             base_linear * config.training_env["observation_base_linear_scale"], # this could be imu linear acc if use_imu or linear vel from state est
             base_ang_vel * config.training_env["observation_base_ang_vel_scale"], # this could be imu angular vel if use_imu or angular vel from state est
             base_projected_gravity,
-            ref_base_lin_vel_h[0:2],
-            [ref_base_ang_vel[2]],
             [joints_pos_delta.FL[0]], [joints_pos_delta.FR[0]], [joints_pos_delta.RL[0]], [joints_pos_delta.RR[0]],
             [joints_pos_delta.FL[1]], [joints_pos_delta.FR[1]], [joints_pos_delta.RL[1]], [joints_pos_delta.RR[1]],
             [joints_pos_delta.FL[2]], [joints_pos_delta.FR[2]], [joints_pos_delta.RL[2]], [joints_pos_delta.RR[2]],
@@ -175,17 +163,6 @@ class GetUpPolicyWrapper:
             
             self.past_rl_actions.copy(),
         ])
-
-
-        # Phase Signal
-        if(self.use_clock_signal):
-            self.phase_signal += self.step_freq * (1 / (self.RL_FREQ))
-            self.phase_signal = self.phase_signal % 1.0
-            obs = np.concatenate((obs, self.phase_signal), axis=0)
-
-            commands = np.array([ref_base_lin_vel_h[0], ref_base_lin_vel_h[1], ref_base_ang_vel[2]], dtype=np.float32)
-            if(np.linalg.norm(commands) < 0.01):
-                obs[48:52] = -1.0
 
 
         if(config.training_env["use_concurrent_state_est"] == True):

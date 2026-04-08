@@ -262,11 +262,8 @@ class ControllerROS2(Node):
                         base_quat_wxyz=base_quat_wxyz,
                         base_lin_vel=base_lin_vel, 
                         base_ang_vel=base_ang_vel,
-                        heading_orientation_SO3=heading_orientation_SO3,
                         joints_pos=joints_pos, 
                         joints_vel=joints_vel,
-                        ref_base_lin_vel=ref_base_lin_vel, 
-                        ref_base_ang_vel=ref_base_ang_vel,
                         imu_linear_acceleration=self.imu_linear_acceleration,
                         imu_angular_velocity=self.imu_angular_velocity,
                         imu_orientation=self.imu_orientation)
