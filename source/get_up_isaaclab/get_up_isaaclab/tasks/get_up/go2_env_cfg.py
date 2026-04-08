@@ -248,7 +248,7 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
 
     
     # Tracking reward scale
-    orientation_reward_scale = -1.0
+    orientation_reward_scale = 1.0
     height_reward_scale = 1.0
     
     # Joint reward scale
@@ -262,7 +262,7 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
     
     # Undesired contacts reward scale
     undersired_contact_reward_scale = -1.0 * 0.0
-    action_rate_reward_scale = -0.01
+    action_rate_reward_scale = -0.001
     action_smoothness_reward_scale = -0.001
 
     # Feet reward scale

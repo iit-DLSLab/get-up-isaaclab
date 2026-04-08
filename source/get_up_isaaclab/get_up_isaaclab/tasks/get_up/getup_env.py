@@ -281,6 +281,7 @@ class GetUpEnv(DirectRLEnv):
         root_pitch_w = torch.atan2(torch.sin(root_pitch_w), torch.cos(root_pitch_w))
         
         base_orientation =  torch.square(terrain_pitch - root_pitch_w) + torch.square(terrain_roll - root_roll_w)
+        base_orientation = torch.exp(-base_orientation / 0.01)
 
         
         # action rate
@@ -370,7 +371,7 @@ class GetUpEnv(DirectRLEnv):
 
 
         # feet to hip distance
-        should_stance = height_error < 0.05
+        should_stance = height_error < 0.10
         
         ROT_W2H = math_utils.matrix_from_quat(math_utils.yaw_quat(self._robot.data.root_quat_w))
         feet_to_base_w = self._robot.data.body_pos_w[:, self._feet_ids_robot, :3] - self._robot.data.root_state_w[:, :3].unsqueeze(1)
@@ -382,8 +383,8 @@ class GetUpEnv(DirectRLEnv):
         desired_hip_offset = self._desired_hip_offset
         feet_to_hip_distance_x = torch.square(feet_to_base_h[:, 0] - hip_to_base_h[:, 0])
         feet_to_hip_distance_y = torch.square(feet_to_base_h[:, 1] + desired_hip_offset.unsqueeze(0) - hip_to_base_h[:, 1])
-        feet_to_hip_distance = -torch.mean(torch.sqrt(feet_to_hip_distance_x + feet_to_hip_distance_y), dim=1)
-        feet_to_hip_distance = torch.exp(feet_to_hip_distance / 0.01) * should_stance
+        feet_to_hip_distance = -torch.mean(torch.sqrt(feet_to_hip_distance_x + feet_to_hip_distance_y), dim=1)* should_stance
+        #feet_to_hip_distance = torch.exp(feet_to_hip_distance / 0.01) * should_stance
 
 
 
@@ -466,7 +467,15 @@ class GetUpEnv(DirectRLEnv):
         joint_vel = self._robot.data.default_joint_vel[env_ids]
         default_root_state = self._robot.data.default_root_state[env_ids]
         default_root_state[:, :3] += self._terrain.env_origins[env_ids]
-        default_root_state[:, 3:7] = math_utils.random_orientation(env_ids.shape[0], device=self.device)
+        
+        # Apply random orientation except for environments with IDs in [1, 100]
+        rand_quats = math_utils.random_orientation(env_ids.shape[0], device=self.device)
+        env_ids_device = env_ids.to(self.device)
+        no_random_mask = (env_ids_device >= 0) & (env_ids_device <= 500)
+        if no_random_mask.any() and self.num_envs > 500:
+            rand_quats[no_random_mask] = default_root_state[no_random_mask, 3:7]
+        default_root_state[:, 3:7] = rand_quats
+        
         self._robot.write_root_pose_to_sim(default_root_state[:, :7], env_ids)
         self._robot.write_root_velocity_to_sim(default_root_state[:, 7:], env_ids)
         self._robot.write_joint_state_to_sim(joint_pos, joint_vel, None, env_ids)
