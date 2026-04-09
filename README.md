@@ -2,9 +2,9 @@
   <img src="https://img.shields.io/badge/IsaacLab%20-v2.3.2-blue" alt="IsaacLab v2.3.0" style="margin-bottom: 1px;">
   <img src="https://img.shields.io/badge/rsl_rl%20-v3.3.0-blue" alt="rsl-rl v3.3.0" style="margin-bottom: 1px;">
   <div style="display: flex; justify-content: space-around;">
-    <img src="./gifs/train.gif" alt="Train" width="32%">
-    <img src="./gifs/sim-to-sim.gif" alt="Sim-to-Sim" width="32%">
-    <img src="./gifs/sim-to-real.gif" alt="Sim-to-Real" width="32%">
+    <img src="./gifs/train.gif" alt="Train" width="30%">
+    <img src="./gifs/sim-to-sim.gif" alt="Sim-to-Sim" width="32.5%">
+    <img src="./gifs/sim-to-real_.gif" alt="Sim-to-Real" width="32%">
   </div>
 </div>
 
