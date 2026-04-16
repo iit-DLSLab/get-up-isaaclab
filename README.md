@@ -37,6 +37,11 @@ If you want only to deploy a trained policy on your robot, continue on [README_D
 **For the train, check first the compatibility with IsaacLab and rsl-rl at the top of this readme. They indicate the releases that we tested.**
 
 
+## How to contribute
+
+PRs are very welcome (search for **TODO** in the issue, or add what you like)!
+
+
 ## Maintainer
 
 This repository is maintained by [Giulio Turrisi](https://github.com/giulioturrisi).
