@@ -30,7 +30,7 @@ A list of robots and environments available is described below:
 | [Aliengo](https://github.com/iit-DLSLab/gym-quadruped/tree/master/gym_quadruped/robot_model/aliengo), [Go2](https://github.com/iit-DLSLab/gym-quadruped/tree/master/gym_quadruped/robot_model/go2), [B2](https://github.com/iit-DLSLab/gym-quadruped/tree/master/gym_quadruped/robot_model/b2)| GetUp-**RobotModel**-Flat-Blind <br> GetUp-**RobotModel**-Rough-Blind <br>|
 
 
-## Installation and runs
+## Installation and Runs
 
 If you want only to deploy a trained policy on your robot, continue on [README_DEPLOY](https://github.com/iit-DLSLab/get-up-dls-isaaclab/blob/main/README_DEPLOY.md) otherwise on [README_TRAIN](https://github.com/iit-DLSLab/get-up-dls-isaaclab/blob/main/README_TRAIN.md).
 
