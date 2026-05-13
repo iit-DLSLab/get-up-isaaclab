@@ -22,13 +22,14 @@ from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.utils import configclass
 
 from .go2_env_cfg import Go2FlatEnvCfg, Go2RoughBlindEnvCfg
+from .pegasus_env_cfg import PegasusFlatEnvCfg, PegasusRoughBlindEnvCfg
 
 from get_up_isaaclab.tasks.supervised_learning_networks import SimpleNN
 
 class GetUpEnv(DirectRLEnv):
-    cfg: Go2FlatEnvCfg | Go2RoughBlindEnvCfg
+    cfg: Go2FlatEnvCfg | Go2RoughBlindEnvCfg | PegasusFlatEnvCfg | PegasusRoughBlindEnvCfg
 
-    def __init__(self, cfg: Go2FlatEnvCfg | Go2RoughBlindEnvCfg, render_mode: str | None = None, **kwargs):
+    def __init__(self, cfg: Go2FlatEnvCfg | Go2RoughBlindEnvCfg | PegasusFlatEnvCfg | PegasusRoughBlindEnvCfg, render_mode: str | None = None, **kwargs):
         super().__init__(cfg, render_mode, **kwargs)
 
         # Joint position command (deviation from default joint positions)

@@ -41,4 +41,28 @@ gym.register(
 )
 
 
+# Pegasus environments
+from .getup_env import PegasusFlatEnvCfg, PegasusRoughBlindEnvCfg
+
+gym.register(
+    id="GetUp-Pegasus-Flat",
+    entry_point=GetUpEnv,
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": PegasusFlatEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:FlatPPORunnerCfg",
+    },
+)
+
+gym.register(
+    id="GetUp-Pegasus-Rough-Blind",
+    entry_point=GetUpEnv,
+    disable_env_checker=True,
+    kwargs={
+        "env_cfg_entry_point": PegasusRoughBlindEnvCfg,
+        "rsl_rl_cfg_entry_point": f"{agents.__name__}.rsl_rl_ppo_cfg:RoughPPORunnerCfg",
+    },
+)
+
+
 
