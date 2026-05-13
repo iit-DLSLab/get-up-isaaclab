@@ -4,7 +4,7 @@
 # SPDX-License-Identifier: BSD-3-Clause
 
 import isaaclab.sim as sim_utils
-from get_up_isaaclab.actuators import IdentifiedActuatorElectricCfg, PaceDCMotorCfg
+from get_up_isaaclab.actuators import PaceDCMotorCfg
 from isaaclab.assets.articulation import ArticulationCfg
 
 from get_up_isaaclab.assets import ISAAC_ASSET_DIR
@@ -70,7 +70,7 @@ GO2_CALF_ACTUATOR_CFG = PaceDCMotorCfg(
 
 GO2_CFG = ArticulationCfg(
     spawn=sim_utils.UsdFileCfg(
-        usd_path=f"{ISAAC_ASSET_DIR}/go2_asset/from_xml/go2.usd",
+        usd_path=f"{ISAAC_ASSET_DIR}/go2_asset/go2.usd",
         activate_contact_sensors=True,
         rigid_props=sim_utils.RigidBodyPropertiesCfg(
             disable_gravity=False,

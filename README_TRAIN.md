@@ -24,15 +24,15 @@ python -m pip install -e source/get_up_isaaclab
 - To train:
 
 ```bash
-python scripts/rsl_rl/train.py --task=GetUp-Aliengo-Flat --num_envs=4096 --headless
-python scripts/rsl_rl/train.py --task=GetUp-Aliengo-Rough-Blind --num_envs=4096 --headless
+python scripts/rsl_rl/train.py --task=GetUp-Go2-Flat --num_envs=4096 --headless
+python scripts/rsl_rl/train.py --task=GetUp-Go2-Rough-Blind --num_envs=4096 --headless
 ```
 
 
 - To test the policy, you can press:
 ```bash
-python scripts/rsl_rl/play.py --task=GetUp-Aliengo-Flat --num_envs=16
-python scripts/rsl_rl/play.py --task=GetUp-Aliengo-Rough-Blind --num_envs=16
+python scripts/rsl_rl/play.py --task=GetUp-Go2-Flat --num_envs=16
+python scripts/rsl_rl/play.py --task=GetUp-Go2-Rough-Blind --num_envs=16
 ```
 
 

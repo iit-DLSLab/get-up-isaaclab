@@ -29,7 +29,7 @@ from gym_quadruped.utils.quadruped_utils import LegsAttr
 
 
 # GetUp Policy imports
-from get_up_policy_wrapper import GetUpPolicyWrapper
+from getup_policy_wrapper import GetUpPolicyWrapper
 
 import config
 
@@ -194,7 +194,7 @@ class ControllerROS2(Node):
             if(self.first_message_imu_arrived==False or self.first_message_joints_arrived==False):
                 return
         else:
-            if(self.first_message_base_arrived==False or self.first_message_joints_arrived==False):
+            if(self.first_message_joints_arrived==False):
                 return
         
         # Update the mujoco model
@@ -207,8 +207,8 @@ class ControllerROS2(Node):
             self.env.mjData.qpos[3:7] = copy.deepcopy(self.imu_orientation)
             self.env.mjData.qvel[3:6] = copy.deepcopy(self.imu_angular_velocity)
         else:
-            self.env.mjData.qpos[3:7] = copy.deepcopy(self.orientation)
-            self.env.mjData.qvel[3:6] = copy.deepcopy(self.angular_velocity)
+            self.env.mjData.qpos[3:7] = copy.deepcopy(self.imu_orientation)
+            self.env.mjData.qvel[3:6] = copy.deepcopy(self.imu_angular_velocity)
         
         # These info instead are used for sure in all the cases
         self.env.mjData.qpos[7:] = copy.deepcopy(self.joint_positions)

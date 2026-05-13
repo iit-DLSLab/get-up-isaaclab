@@ -21,17 +21,14 @@ from isaaclab.sim import SimulationCfg
 from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.utils import configclass
 
-
-from .aliengo_env_cfg import AliengoFlatEnvCfg, AliengoRoughBlindEnvCfg
 from .go2_env_cfg import Go2FlatEnvCfg, Go2RoughBlindEnvCfg
-from .b2_env_cfg import B2FlatEnvCfg, B2RoughBlindEnvCfg
 
 from get_up_isaaclab.tasks.supervised_learning_networks import SimpleNN
 
 class GetUpEnv(DirectRLEnv):
-    cfg: AliengoFlatEnvCfg | AliengoRoughBlindEnvCfg | Go2FlatEnvCfg | Go2RoughBlindEnvCfg | B2FlatEnvCfg | B2RoughBlindEnvCfg
+    cfg: Go2FlatEnvCfg | Go2RoughBlindEnvCfg
 
-    def __init__(self, cfg: AliengoFlatEnvCfg | AliengoRoughBlindEnvCfg | Go2FlatEnvCfg | Go2RoughBlindEnvCfg | B2FlatEnvCfg | B2RoughBlindEnvCfg, render_mode: str | None = None, **kwargs):
+    def __init__(self, cfg: Go2FlatEnvCfg | Go2RoughBlindEnvCfg, render_mode: str | None = None, **kwargs):
         super().__init__(cfg, render_mode, **kwargs)
 
         # Joint position command (deviation from default joint positions)
