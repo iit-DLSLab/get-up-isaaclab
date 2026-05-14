@@ -98,15 +98,18 @@ class GetUpEnv(DirectRLEnv):
             ]
         }
         # Get specific body indices
-        self._base_id, _ = self._contact_sensor.find_bodies("base")
-        self._feet_ids, _ = self._contact_sensor.find_bodies(".*foot")
-        self._hip_ids, _ = self._contact_sensor.find_bodies(".*hip")
-        self._thigh_ids, _ = self._contact_sensor.find_bodies(".*thigh")
-        self._undesired_contact_body_ids = self._base_id + self._hip_ids + self._thigh_ids
+        self._base_contact_sensor_id, _ = self._contact_sensor.find_bodies("base")
+        self._feet_contact_sensor_id, _ = self._contact_sensor.find_bodies(".*foot")
+        self._hip_contact_sensor_id, _ = self._contact_sensor.find_bodies(".*hip")
+        self._thigh_contact_sensor_id, _ = self._contact_sensor.find_bodies(".*thigh")
+        self._undesired_contact_body_ids = self._base_contact_sensor_id + self._hip_contact_sensor_id + self._thigh_contact_sensor_id
 
         
         self._feet_ids_robot, _ = self._robot .find_bodies(".*foot")
         self._hip_ids_robot, _ = self._robot.find_bodies(".*hip")
+
+        # Ensure the order is consistent with the one expected in the cfg
+        self._ids_joints_order = self._robot.find_joints(name_keys=self.cfg.desired_joints_order, preserve_order=True)[0]
 
 
     def _setup_scene(self):
@@ -140,6 +143,7 @@ class GetUpEnv(DirectRLEnv):
         self._previous_previous_actions = self._previous_actions.clone()
         self._previous_actions = self._actions.clone()
         self._actions = actions.clone()
+        default_joint_pos_ordered = self._robot.data.default_joint_pos[:, self._ids_joints_order]
         
         # Clip the action
         self._actions = torch.clamp(self._actions, -self.cfg.desired_clip_actions, self.cfg.desired_clip_actions)
@@ -148,17 +152,19 @@ class GetUpEnv(DirectRLEnv):
         if(self.cfg.use_filter_actions):
             alpha = 0.8
             temp = alpha * self._actions + (1 - alpha) * self._previous_actions
-            self._processed_actions = self.cfg.action_scale * temp + self._robot.data.default_joint_pos
+            self._processed_actions = self.cfg.action_scale * temp + default_joint_pos_ordered
         else:
-            self._processed_actions = self.cfg.action_scale * self._actions + self._robot.data.default_joint_pos
+            self._processed_actions = self.cfg.action_scale * self._actions + default_joint_pos_ordered
 
 
     def _apply_action(self):
-        self._robot.set_joint_position_target(self._processed_actions)
+        self._robot.set_joint_position_target(self._processed_actions, joint_ids=self._ids_joints_order)
 
 
 
     def _get_observations(self) -> dict:
+        joint_pos_error_ordered = self._robot.data.joint_pos[:, self._ids_joints_order] - self._robot.data.default_joint_pos[:, self._ids_joints_order]
+        joint_vel_ordered = self._robot.data.joint_vel[:, self._ids_joints_order]
     
 
         # Choosing the main source of observation
@@ -187,8 +193,8 @@ class GetUpEnv(DirectRLEnv):
                     base_linear * self.cfg.observation_base_linear_scale,
                     base_ang_vel * self.cfg.observation_base_ang_vel_scale,
                     projected_gravity_b,
-                    self._robot.data.joint_pos - self._robot.data.default_joint_pos,
-                    self._robot.data.joint_vel * self.cfg.observation_joint_vel_scale,
+                    joint_pos_error_ordered,
+                    joint_vel_ordered * self.cfg.observation_joint_vel_scale,
                     self._actions,
                 )
                 if tensor is not None
@@ -296,52 +302,61 @@ class GetUpEnv(DirectRLEnv):
         
 
         # joint acceleration
-        joints_accel = torch.sum(torch.square(self._robot.data.joint_acc), dim=1)
+        joints_accel = torch.sum(torch.square(self._robot.data.joint_acc[:, self._ids_joints_order]), dim=1)
 
 
         # joint torques
-        joints_torques = torch.sum(torch.square(self._robot.data.applied_torque), dim=1)
+        joints_torques = torch.sum(torch.square(self._robot.data.applied_torque[:, self._ids_joints_order]), dim=1)
 
 
         # energy = torque * velocity
-        joints_energy = torch.sum(torch.abs(self._robot.data.applied_torque * self._robot.data.joint_vel), dim=1)
+        joints_energy = torch.sum(
+            torch.abs(
+                self._robot.data.applied_torque[:, self._ids_joints_order]
+                * self._robot.data.joint_vel[:, self._ids_joints_order]
+            ),
+            dim=1,
+        )
+
+        ordered_joint_pos = self._robot.data.joint_pos[:, self._ids_joints_order]
+        ordered_default_joint_pos = self._robot.data.default_joint_pos[:, self._ids_joints_order]
 
         
         # hip position
-        hip_joints_position = self._robot.data.joint_pos[:,0:4]
-        hip_joints_position_error = torch.square(hip_joints_position - self._robot.data.default_joint_pos[:,0:4])
+        hip_joints_position = ordered_joint_pos[:,0:4]
+        hip_joints_position_error = torch.square(hip_joints_position - ordered_default_joint_pos[:,0:4])
         hip_joints_position_reward = torch.sum(hip_joints_position_error,dim=1)
 
 
         # thigh position
-        thigh_joints_position = self._robot.data.joint_pos[:,4:8]
-        thigh_joints_position_error = torch.square(thigh_joints_position - self._robot.data.default_joint_pos[:,4:8])
+        thigh_joints_position = ordered_joint_pos[:,4:8]
+        thigh_joints_position_error = torch.square(thigh_joints_position - ordered_default_joint_pos[:,4:8])
         thigh_joints_position_reward = torch.sum(thigh_joints_position_error,dim=1)
 
 
         # calf position
-        calf_joints_position = self._robot.data.joint_pos[:,8:12]
-        calf_joints_position_error = torch.square(calf_joints_position - self._robot.data.default_joint_pos[:,8:12])
+        calf_joints_position = ordered_joint_pos[:,8:12]
+        calf_joints_position_error = torch.square(calf_joints_position - ordered_default_joint_pos[:,8:12])
         calf_joints_position_reward = torch.sum(calf_joints_position_error,dim=1)
 
 
         # feet airtime
-        first_contact = self._contact_sensor.compute_first_contact(self.step_dt)[:, self._feet_ids]
-        last_air_time = self._contact_sensor.data.last_air_time[:, self._feet_ids]
+        first_contact = self._contact_sensor.compute_first_contact(self.step_dt)[:, self._feet_contact_sensor_id]
+        last_air_time = self._contact_sensor.data.last_air_time[:, self._feet_contact_sensor_id]
         feet_air_time = torch.sum((last_air_time - 0.5) * first_contact, dim=1)
 
 
         # feet slide
-        contacts_foot = self._contact_sensor.data.net_forces_w_history[:, :, self._feet_ids, :].norm(dim=-1).max(dim=1)[0] > 1.0
+        contacts_foot = self._contact_sensor.data.net_forces_w_history[:, :, self._feet_contact_sensor_id, :].norm(dim=-1).max(dim=1)[0] > 1.0
         body_vel = self._robot.data.body_lin_vel_w[:, self._feet_ids_robot, :2]
         feet_slide = torch.sum(body_vel.norm(dim=-1) * contacts_foot, dim=1)
 
         
 
         # feet height clearance mujoco
-        first_contact = self._contact_sensor.compute_first_contact(self.step_dt)[:, self._feet_ids]
+        first_contact = self._contact_sensor.compute_first_contact(self.step_dt)[:, self._feet_contact_sensor_id]
         net_contact_forces = self._contact_sensor.data.net_forces_w_history
-        is_contact = (torch.max(torch.norm(net_contact_forces[:, :, self._feet_ids], dim=-1), dim=1)[0] > 1.0)
+        is_contact = (torch.max(torch.norm(net_contact_forces[:, :, self._feet_contact_sensor_id], dim=-1), dim=1)[0] > 1.0)
 
         self._swing_peak *= ~is_contact # reset if the foot is in contact
         self._swing_peak = torch.max(self._swing_peak, self._robot.data.body_pos_w[:, self._feet_ids_robot, 2].clone()) 
@@ -498,6 +513,8 @@ class GetUpEnv(DirectRLEnv):
 
 
     def _get_concurrent_state_estimation(self,):
+        joint_pos_error_ordered = self._robot.data.joint_pos[:, self._ids_joints_order] - self._robot.data.default_joint_pos[:, self._ids_joints_order]
+        joint_vel_ordered = self._robot.data.joint_vel[:, self._ids_joints_order]
         # Using a supervised learning state estimation
         obs_concurrent_state_est = torch.cat(
             [
@@ -506,8 +523,8 @@ class GetUpEnv(DirectRLEnv):
                     self._imu.data.lin_acc_b,
                     self._imu.data.ang_vel_b,
                     self._robot.data.projected_gravity_b,
-                    self._robot.data.joint_pos - self._robot.data.default_joint_pos,
-                    self._robot.data.joint_vel * self.cfg.observation_joint_vel_scale,
+                    joint_pos_error_ordered,
+                    joint_vel_ordered * self.cfg.observation_joint_vel_scale,
                     self._actions,
                 )
                 if tensor is not None
@@ -551,6 +568,8 @@ class GetUpEnv(DirectRLEnv):
 
 
     def _get_rma(self, ):
+        joint_pos_error_ordered = self._robot.data.joint_pos[:, self._ids_joints_order] - self._robot.data.default_joint_pos[:, self._ids_joints_order]
+        joint_vel_ordered = self._robot.data.joint_vel[:, self._ids_joints_order]
         # Learning privileged information via supervised learning
         obs_rma = torch.cat(
             [
@@ -559,8 +578,8 @@ class GetUpEnv(DirectRLEnv):
                     self._imu.data.lin_acc_b,
                     self._imu.data.ang_vel_b,
                     self._robot.data.projected_gravity_b,
-                    self._robot.data.joint_pos - self._robot.data.default_joint_pos,
-                    self._robot.data.joint_vel * self.cfg.observation_joint_vel_scale,
+                    joint_pos_error_ordered,
+                    joint_vel_ordered * self.cfg.observation_joint_vel_scale,
                     self._actions,
                 )
                 if tensor is not None
@@ -637,7 +656,7 @@ class GetUpEnv(DirectRLEnv):
         delta_s = torch.tensor(distance_between_front_and_back).to(self.device)
         terrain_pitch = -torch.atan2(delta_z, delta_s)
 
-        contacts_foot = self._contact_sensor.data.net_forces_w_history[:, :, self._feet_ids, :].norm(dim=-1).max(dim=1)[0] > 1.0
+        contacts_foot = self._contact_sensor.data.net_forces_w_history[:, :, self._feet_contact_sensor_id, :].norm(dim=-1).max(dim=1)[0] > 1.0
 
         obs_privileged = torch.cat((
                             self._robot.data.root_lin_vel_b,
