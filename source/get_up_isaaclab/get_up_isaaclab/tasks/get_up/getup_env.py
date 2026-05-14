@@ -99,14 +99,14 @@ class GetUpEnv(DirectRLEnv):
         }
         # Get specific body indices
         self._base_contact_sensor_id, _ = self._contact_sensor.find_bodies("base")
-        self._feet_contact_sensor_id, _ = self._contact_sensor.find_bodies(".*foot")
-        self._hip_contact_sensor_id, _ = self._contact_sensor.find_bodies(".*hip")
-        self._thigh_contact_sensor_id, _ = self._contact_sensor.find_bodies(".*thigh")
-        self._undesired_contact_body_ids = self._base_contact_sensor_id + self._hip_contact_sensor_id + self._thigh_contact_sensor_id
+        self._feet_contact_sensor_ids, _ = self._contact_sensor.find_bodies(["FL_foot", "FR_foot", "RL_foot", "RR_foot"], preserve_order=True)
+        self._hip_contact_sensor_ids, _ = self._contact_sensor.find_bodies(["FL_hip", "FR_hip", "RL_hip", "RR_hip"], preserve_order=True)
+        self._thigh_contact_sensor_ids, _ = self._contact_sensor.find_bodies(["FL_thigh", "FR_thigh", "RL_thigh", "RR_thigh"], preserve_order=True)
+        self._undesired_contact_body_ids = self._base_contact_sensor_id + self._hip_contact_sensor_ids + self._thigh_contact_sensor_ids
 
         
-        self._feet_ids_robot, _ = self._robot .find_bodies(".*foot")
-        self._hip_ids_robot, _ = self._robot.find_bodies(".*hip")
+        self._feet_ids_robot, _ = self._robot.find_bodies(["FL_foot", "FR_foot", "RL_foot", "RR_foot"], preserve_order=True)
+        self._hip_ids_robot, _ = self._robot.find_bodies(["FL_hip", "FR_hip", "RL_hip", "RR_hip"], preserve_order=True)
 
         # Ensure the order is consistent with the one expected in the cfg
         self._ids_joints_order = self._robot.find_joints(name_keys=self.cfg.desired_joints_order, preserve_order=True)[0]
@@ -341,22 +341,22 @@ class GetUpEnv(DirectRLEnv):
 
 
         # feet airtime
-        first_contact = self._contact_sensor.compute_first_contact(self.step_dt)[:, self._feet_contact_sensor_id]
-        last_air_time = self._contact_sensor.data.last_air_time[:, self._feet_contact_sensor_id]
+        first_contact = self._contact_sensor.compute_first_contact(self.step_dt)[:, self._feet_contact_sensor_ids]
+        last_air_time = self._contact_sensor.data.last_air_time[:, self._feet_contact_sensor_ids]
         feet_air_time = torch.sum((last_air_time - 0.5) * first_contact, dim=1)
 
 
         # feet slide
-        contacts_foot = self._contact_sensor.data.net_forces_w_history[:, :, self._feet_contact_sensor_id, :].norm(dim=-1).max(dim=1)[0] > 1.0
+        contacts_foot = self._contact_sensor.data.net_forces_w_history[:, :, self._feet_contact_sensor_ids, :].norm(dim=-1).max(dim=1)[0] > 1.0
         body_vel = self._robot.data.body_lin_vel_w[:, self._feet_ids_robot, :2]
         feet_slide = torch.sum(body_vel.norm(dim=-1) * contacts_foot, dim=1)
 
         
 
         # feet height clearance mujoco
-        first_contact = self._contact_sensor.compute_first_contact(self.step_dt)[:, self._feet_contact_sensor_id]
+        first_contact = self._contact_sensor.compute_first_contact(self.step_dt)[:, self._feet_contact_sensor_ids]
         net_contact_forces = self._contact_sensor.data.net_forces_w_history
-        is_contact = (torch.max(torch.norm(net_contact_forces[:, :, self._feet_contact_sensor_id], dim=-1), dim=1)[0] > 1.0)
+        is_contact = (torch.max(torch.norm(net_contact_forces[:, :, self._feet_contact_sensor_ids], dim=-1), dim=1)[0] > 1.0)
 
         self._swing_peak *= ~is_contact # reset if the foot is in contact
         self._swing_peak = torch.max(self._swing_peak, self._robot.data.body_pos_w[:, self._feet_ids_robot, 2].clone()) 
@@ -656,7 +656,7 @@ class GetUpEnv(DirectRLEnv):
         delta_s = torch.tensor(distance_between_front_and_back).to(self.device)
         terrain_pitch = -torch.atan2(delta_z, delta_s)
 
-        contacts_foot = self._contact_sensor.data.net_forces_w_history[:, :, self._feet_contact_sensor_id, :].norm(dim=-1).max(dim=1)[0] > 1.0
+        contacts_foot = self._contact_sensor.data.net_forces_w_history[:, :, self._feet_contact_sensor_ids, :].norm(dim=-1).max(dim=1)[0] > 1.0
 
         obs_privileged = torch.cat((
                             self._robot.data.root_lin_vel_b,
