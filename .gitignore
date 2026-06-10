@@ -39,3 +39,6 @@ _build
 deploy/ros2_ws/build/
 deploy/ros2_ws/install/
 deploy/ros2_ws/log/
+
+# Usd
+source/get_up_isaaclab/get_up_isaaclab/assets/pegasus_asset/
