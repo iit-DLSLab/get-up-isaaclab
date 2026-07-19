@@ -120,7 +120,7 @@ class PegasusFlatEnvCfg(DirectRLEnvCfg):
     decimation = 4
     action_scale = 0.5
     action_space = 12
-    observation_space = 45
+    observation_space = 43
     state_space = 0
 
 
@@ -130,19 +130,6 @@ class PegasusFlatEnvCfg(DirectRLEnvCfg):
     if(use_observation_history):
         single_observation_space = observation_space # Placeholder. Later we may add map, but only from the latest obs
         observation_space *= history_length
-
-    use_imu = False
-
-    use_concurrent_state_est = False
-    if(use_concurrent_state_est):
-        concurrent_state_est_output_space = 3 #lin_vel_b
-        single_concurrent_state_est_observation_space = single_observation_space
-        concurrent_state_est_observation_space = observation_space
-        concurrent_state_est_batch_size = 512
-        concurrent_state_est_train_epochs = 1000
-        concurrent_state_est_lr = 1e-3
-        concurrent_state_est_ep_saving_interval = 1000
-        concurrent_state_est_ep_saving_start = 6000
 
     use_rma = False
     if(use_rma):
@@ -168,12 +155,6 @@ class PegasusFlatEnvCfg(DirectRLEnvCfg):
         state_space += 2 #base pitch and height
         state_space += 3 #clean lin vel b
         state_space += 4 #contacts foot
-
-
-    observation_base_linear_scale = 1.0
-    observation_base_ang_vel_scale = 1.0
-    observation_joint_vel_scale = 0.1
-
 
 
     # simulation

@@ -70,22 +70,8 @@ if __name__ == '__main__':
         
         # Get the current state of the robot -----------------------------------------------------
         qpos, qvel = env.mjData.qpos, env.mjData.qvel
-        base_lin_vel = env.base_lin_vel(frame='base')
-        base_ang_vel = env.base_ang_vel(frame='base')
-        base_ori_euler_xyz = env.base_ori_euler_xyz
-        heading_orientation_SO3 = env.heading_orientation_SO3
-        base_quat_wxyz = qpos[3:7]
-        base_pos = env.base_pos
-
-        if(config.training_env["use_imu"] or config.training_env["use_concurrent_state_est"]):
-            imu_linear_acceleration = env.mjData.sensordata[0:3]
-            imu_angular_velocity = env.mjData.sensordata[3:6]
-            imu_orientation = env.mjData.sensordata[9:13]
-            imu_orientation = base_quat_wxyz
-        else:
-            imu_linear_acceleration = np.zeros(3)
-            imu_angular_velocity = np.zeros(3)
-            imu_orientation = np.zeros(4)
+        imu_angular_velocity = env.mjData.sensordata[3:6]
+        imu_orientation = env.mjData.sensordata[9:13]
 
         joints_pos = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
         joints_pos.FL = qpos[env.legs_qpos_idx.FL]
@@ -108,14 +94,8 @@ if __name__ == '__main__':
         if env.step_num % round(1 / (getup_policy.RL_FREQ * simulation_dt)) == 0:            
             
             desired_joint_pos = getup_policy.compute_control(
-                        base_pos=base_pos, 
-                        base_ori_euler_xyz=base_ori_euler_xyz, 
-                        base_quat_wxyz=base_quat_wxyz,
-                        base_lin_vel=base_lin_vel, 
-                        base_ang_vel=base_ang_vel,
                         joints_pos=joints_pos, 
                         joints_vel=joints_vel,
-                        imu_linear_acceleration=imu_linear_acceleration,
                         imu_angular_velocity=imu_angular_velocity,
                         imu_orientation=imu_orientation,
                         heightmap_data=heightmap.data if getup_policy.use_vision else None)

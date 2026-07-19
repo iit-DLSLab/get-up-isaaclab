@@ -154,39 +154,17 @@ class GetUpEnv(DirectRLEnv):
 
 
 
-    def _get_observations(self) -> dict:
-        joint_pos_error_ordered = self._robot.data.joint_pos[:, self._ids_joints_order] - self._robot.data.default_joint_pos[:, self._ids_joints_order]
-        joint_vel_ordered = self._robot.data.joint_vel[:, self._ids_joints_order]
-    
-
-        # Choosing the main source of observation
-        if(self.cfg.use_concurrent_state_est):
-            # If concurrent SE/Learned State Estimator, we predict linear and angular vel from IMU
-            base_linear = self._get_concurrent_state_estimation()
-            base_ang_vel = self._imu.data.ang_vel_b
-            projected_gravity_b = self._imu.data.projected_gravity_b
-        elif(self.cfg.use_imu):
-            # Using directly the IMU
-            base_linear = self._imu.data.lin_acc_b
-            base_ang_vel = self._imu.data.ang_vel_b
-            projected_gravity_b = self._imu.data.projected_gravity_b
-        else:
-            # Imu but without linear info
-            base_linear = self._imu.data.lin_acc_b*0.0 #TODO remove
-            base_ang_vel = self._imu.data.ang_vel_b
-            projected_gravity_b = self._imu.data.projected_gravity_b
-        
+    def _get_observations(self) -> dict:    
         
         # Standard Obs for the Actor/Critic
         obs = torch.cat(
             [
                 tensor
                 for tensor in (
-                    base_linear * self.cfg.observation_base_linear_scale,
-                    base_ang_vel * self.cfg.observation_base_ang_vel_scale,
-                    projected_gravity_b,
-                    joint_pos_error_ordered,
-                    joint_vel_ordered * self.cfg.observation_joint_vel_scale,
+                    self._imu.data.ang_vel_b,
+                    self._imu.data.projected_gravity_b,
+                    self._robot.data.joint_pos[:, self._ids_joints_order] - self._robot.data.default_joint_pos[:, self._ids_joints_order],
+                    self._robot.data.joint_vel[:, self._ids_joints_order],
                     self._actions,
                 )
                 if tensor is not None
@@ -284,7 +262,7 @@ class GetUpEnv(DirectRLEnv):
         height_error = torch.square(self.cfg.desired_base_height + mean_height_ray - self._robot.data.root_state_w[:, 2])
         height_error_mapped = torch.exp(-height_error / 0.1)
 
-        should_optimize_height = base_orientation_error < 0.5
+        should_optimize_height = (torch.abs(terrain_pitch - root_pitch_w) < 0.5) * (torch.abs(terrain_roll - root_roll_w) < 0.5)
         height_error_mapped = height_error_mapped * should_optimize_height
 
         
@@ -313,8 +291,6 @@ class GetUpEnv(DirectRLEnv):
 
 
         # feet to hip distance
-        should_stance = height_error < 0.10
-        
         ROT_W2H = math_utils.matrix_from_quat(math_utils.yaw_quat(self._robot.data.root_quat_w))
         feet_to_base_w = self._robot.data.body_pos_w[:, self._feet_ids_robot, :3] - self._robot.data.root_state_w[:, :3].unsqueeze(1)
         feet_to_base_h = torch.matmul(ROT_W2H.transpose(1,2), feet_to_base_w.transpose(1, 2))
@@ -325,10 +301,10 @@ class GetUpEnv(DirectRLEnv):
         desired_hip_offset = self._desired_hip_offset
         feet_to_hip_distance_x = torch.square(feet_to_base_h[:, 0] - hip_to_base_h[:, 0])
         feet_to_hip_distance_y = torch.square(feet_to_base_h[:, 1] + desired_hip_offset.unsqueeze(0) - hip_to_base_h[:, 1])
-        feet_to_hip_distance = -torch.mean(torch.sqrt(feet_to_hip_distance_x + feet_to_hip_distance_y), dim=1)* should_stance
-        #feet_to_hip_distance = torch.exp(feet_to_hip_distance / 0.01) * should_stance
-
-
+        feet_to_hip_distance = -torch.mean(torch.sqrt(feet_to_hip_distance_x + feet_to_hip_distance_y), dim=1)
+        
+        should_stance = (torch.abs(terrain_pitch - root_pitch_w) < 0.5) * (torch.abs(terrain_roll - root_roll_w) < 0.5)
+        feet_to_hip_distance = feet_to_hip_distance * should_stance
 
 
         rewards = {

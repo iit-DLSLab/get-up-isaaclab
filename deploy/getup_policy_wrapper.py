@@ -113,11 +113,6 @@ class GetUpPolicyWrapper:
 
 
     def compute_control(self, 
-            base_pos, 
-            base_ori_euler_xyz, 
-            base_quat_wxyz,
-            base_lin_vel, 
-            base_ang_vel,
             joints_pos, 
             joints_vel,
             imu_linear_acceleration=None,
@@ -126,55 +121,39 @@ class GetUpPolicyWrapper:
             heightmap_data=None):
 
         # Update Observation ----------------------        
-        if(config.training_env["use_imu"] or config.training_env["use_concurrent_state_est"]):
-            base_projected_gravity = self._get_projected_gravity(imu_orientation)
-            base_linear = imu_linear_acceleration
-            base_ang_vel = imu_angular_velocity
-        else:
-            base_projected_gravity = self._get_projected_gravity(base_quat_wxyz)
-            base_linear = base_lin_vel
-            base_ang_vel = base_ang_vel
+        base_projected_gravity = self._get_projected_gravity(imu_orientation)
+        base_ang_vel = imu_angular_velocity
 
 
         # Fill the observation vector
         joints_pos_delta = joints_pos - self.default_joint_pos
         obs = np.concatenate([
-            base_linear * config.training_env["observation_base_linear_scale"], # this could be imu linear acc if use_imu or linear vel from state est
-            base_ang_vel * config.training_env["observation_base_ang_vel_scale"], # this could be imu angular vel if use_imu or angular vel from state est
-            base_projected_gravity,
+            imu_angular_velocity,
+            self._get_projected_gravity(imu_orientation),
             [joints_pos_delta.FL[0]], [joints_pos_delta.FR[0]], [joints_pos_delta.RL[0]], [joints_pos_delta.RR[0]],
             [joints_pos_delta.FL[1]], [joints_pos_delta.FR[1]], [joints_pos_delta.RL[1]], [joints_pos_delta.RR[1]],
             [joints_pos_delta.FL[2]], [joints_pos_delta.FR[2]], [joints_pos_delta.RL[2]], [joints_pos_delta.RR[2]],
             
-            [joints_vel.FL[0] * config.training_env["observation_joint_vel_scale"]], 
-            [joints_vel.FR[0] * config.training_env["observation_joint_vel_scale"]], 
-            [joints_vel.RL[0] * config.training_env["observation_joint_vel_scale"]], 
-            [joints_vel.RR[0] * config.training_env["observation_joint_vel_scale"]],
+            [joints_vel.FL[0]], 
+            [joints_vel.FR[0]], 
+            [joints_vel.RL[0]], 
+            [joints_vel.RR[0]],
 
-            [joints_vel.FL[1] * config.training_env["observation_joint_vel_scale"]], 
-            [joints_vel.FR[1] * config.training_env["observation_joint_vel_scale"]], 
-            [joints_vel.RL[1] * config.training_env["observation_joint_vel_scale"]], 
-            [joints_vel.RR[1] * config.training_env["observation_joint_vel_scale"]],
+            [joints_vel.FL[1]], 
+            [joints_vel.FR[1]], 
+            [joints_vel.RL[1]], 
+            [joints_vel.RR[1]],
             
-            [joints_vel.FL[2] * config.training_env["observation_joint_vel_scale"]], 
-            [joints_vel.FR[2] * config.training_env["observation_joint_vel_scale"]], 
-            [joints_vel.RL[2] * config.training_env["observation_joint_vel_scale"]], 
-            [joints_vel.RR[2] * config.training_env["observation_joint_vel_scale"]],
+            [joints_vel.FL[2]], 
+            [joints_vel.FR[2]], 
+            [joints_vel.RL[2]], 
+            [joints_vel.RR[2]],
             
             self.past_rl_actions.copy(),
         ])
 
 
-        if(config.training_env["use_concurrent_state_est"] == True):
-            #the bottom element is the newest observation!!
-            past_concurrent_state_est = self._observation_history_concurrent_state_est[1:,:]
-            self._observation_history_concurrent_state_est = np.vstack((past_concurrent_state_est, copy.deepcopy(obs)))
-            obs_concurrent_state_est = self._observation_history_concurrent_state_est.flatten()
-            # QUERY THE NETOWRK
-            base_lin_vel_predicted = self._concurrent_state_est_network(torch.tensor(obs_concurrent_state_est, dtype=torch.float32).unsqueeze(0)).detach().numpy().squeeze()
-            obs[0:3] = base_lin_vel_predicted
-            
-            
+
         if(self.use_observation_history):
             #the bottom element is the newest observation!!
             past = self._observation_history[1:,:]
@@ -182,20 +161,7 @@ class GetUpPolicyWrapper:
             obs = self._observation_history.flatten()
 
         
-        if(self.use_vision):
-            # Flatten heightmap with bottom-right at [0], then points going upward
-            heightmap_2d = heightmap_data[..., 2][:, :, 0]  # Remove the last dimension
-            
-            # Flip vertically (so bottom row becomes first) and horizontally (so rightmost becomes first)
-            heightmap_flipped = np.flip(heightmap_2d, axis=(0, 1))
-            
-            # Flatten column-wise so bottom-right is [0], then element above it is [1], etc.
-            heightmap_data_isaac_convention = heightmap_flipped.flatten(order='F')
 
-            height_data = (base_pos[2] - heightmap_data_isaac_convention - 0.5)
-            height_data = height_data.clip(-1.0, 1.0)
-            obs = np.concatenate((obs, height_data), axis=0)
-            
             
         # RL Prediction
         obs = obs.reshape(1, -1)

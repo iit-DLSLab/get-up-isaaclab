@@ -190,26 +190,18 @@ class ControllerROS2(Node):
         
 
         # Safety check to not do anything until a first base and blind state are received
-        if(config.training_env["use_imu"] or config.training_env["use_concurrent_state_est"]):
-            if(self.first_message_imu_arrived==False or self.first_message_joints_arrived==False):
-                return
-        else:
-            if(self.first_message_joints_arrived==False):
-                return
+        if(self.first_message_imu_arrived==False or self.first_message_joints_arrived==False):
+            return
         
         # Update the mujoco model
         # Note that in case of IMU or concurrent state estimator, these info below are not used,
         # In the case we have a state estimator, this is usefull only for debugging visually
         self.env.mjData.qpos[0:3] = copy.deepcopy(self.position)
         self.env.mjData.qvel[0:3] = copy.deepcopy(self.linear_velocity)
-
-        if(config.training_env["use_imu"] or config.training_env["use_concurrent_state_est"]):
-            self.env.mjData.qpos[3:7] = copy.deepcopy(self.imu_orientation)
-            self.env.mjData.qvel[3:6] = copy.deepcopy(self.imu_angular_velocity)
-        else:
-            self.env.mjData.qpos[3:7] = copy.deepcopy(self.imu_orientation)
-            self.env.mjData.qvel[3:6] = copy.deepcopy(self.imu_angular_velocity)
+        self.env.mjData.qpos[3:7] = copy.deepcopy(self.imu_orientation)
+        self.env.mjData.qvel[3:6] = copy.deepcopy(self.imu_angular_velocity)
         
+
         # These info instead are used for sure in all the cases
         self.env.mjData.qpos[7:] = copy.deepcopy(self.joint_positions)
         self.env.mjData.qvel[6:] = copy.deepcopy(self.joint_velocities)
@@ -229,12 +221,7 @@ class ControllerROS2(Node):
         get_up_policy = self.get_up_policy
         
         qpos, qvel = env.mjData.qpos, env.mjData.qvel
-        base_lin_vel = env.base_lin_vel(frame='base')
-        base_ang_vel = env.base_ang_vel(frame='base')
-        base_ori_euler_xyz = env.base_ori_euler_xyz
-        heading_orientation_SO3 = env.heading_orientation_SO3
-        base_quat_wxyz = qpos[3:7]
-        base_pos = env.base_pos
+
 
 
         joints_pos = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
@@ -257,14 +244,8 @@ class ControllerROS2(Node):
         if(self.console.isRLActivated):
 
             desired_joint_pos = get_up_policy.compute_control(
-                        base_pos=base_pos, 
-                        base_ori_euler_xyz=base_ori_euler_xyz, 
-                        base_quat_wxyz=base_quat_wxyz,
-                        base_lin_vel=base_lin_vel, 
-                        base_ang_vel=base_ang_vel,
                         joints_pos=joints_pos, 
                         joints_vel=joints_vel,
-                        imu_linear_acceleration=self.imu_linear_acceleration,
                         imu_angular_velocity=self.imu_angular_velocity,
                         imu_orientation=self.imu_orientation)
             
