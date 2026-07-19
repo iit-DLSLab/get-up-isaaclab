@@ -120,7 +120,7 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
     decimation = 4
     action_scale = 0.5
     action_space = 12
-    observation_space = 43
+    observation_space = 42
     state_space = 0
 
 

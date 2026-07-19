@@ -62,15 +62,6 @@ class GetUpEnv(DirectRLEnv):
                     self.cfg.observation_noise_model, num_envs=self.num_envs, device=self.device
                 )
 
-        # Learned State Estimator
-        if(cfg.use_concurrent_state_est == True):
-            self._concurrent_state_est_network = SimpleNN(cfg.concurrent_state_est_observation_space, cfg.concurrent_state_est_output_space)
-            self._concurrent_state_est_network.to(self.device)
-            self._observation_history_concurrent_state_est = torch.zeros(self.num_envs, cfg.history_length, cfg.single_concurrent_state_est_observation_space, device=self.device)
-            if self.cfg.observation_noise_model:
-                self._observation_noise_model_concurrent_state_est: NoiseModel = self.cfg.observation_noise_model.class_type(
-                    self.cfg.observation_noise_model, num_envs=self.num_envs, device=self.device
-                )
 
         # Logging
         self._episode_sums = {
@@ -360,11 +351,7 @@ class GetUpEnv(DirectRLEnv):
         self._swing_peak[env_ids] = torch.tensor([0.0, 0.0, 0.0, 0.0], device=self.device)
         self._swing_peak_periodic[env_ids] = torch.tensor([0.0, 0.0, 0.0, 0.0], device=self.device)
         
-        # Reset noise
-        if(self.cfg.use_concurrent_state_est):
-            if self.cfg.observation_noise_model:
-                self._observation_noise_model_concurrent_state_est.reset(env_ids)
-        
+
         if(self.cfg.use_rma):
             if self.cfg.observation_noise_model:
                 self._observation_noise_model_rma.reset(env_ids)
