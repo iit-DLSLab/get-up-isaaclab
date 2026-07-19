@@ -77,23 +77,15 @@ class GetUpEnv(DirectRLEnv):
             key: torch.zeros(self.num_envs, dtype=torch.float, device=self.device)
             for key in [
                 "track_height_exp",
-                "track_orientation_l2",
+                "track_orientation_exp",
 
-                "undesired_contacts",
                 "action_rate_l2",
                 "action_smoothness_l2",
                 
-                "joints_hip_pos_l2",
-                "joints_thigh_pos_l2",
-                "joints_calf_pos_l2",
                 "joints_acc_l2",
                 "joints_torques_l2",
                 "joints_energy_l1",
                 
-                "feet_air_time",
-                "feet_height_clearance",
-                "feet_height_clearance_mujoco",
-                "feet_slide",
                 "feet_to_hip_distance_l2",
             ]
         }
@@ -233,17 +225,12 @@ class GetUpEnv(DirectRLEnv):
 
     def _get_rewards(self) -> torch.Tensor:
 
-        # track_height
+        # terrain orientation
         height_data_scanner = self._height_scanner.data.ray_hits_w[..., 2]
         height_data_scanner = torch.nan_to_num(height_data_scanner, nan=0.0, posinf=1.0, neginf=-1.0)
         height_data_scanner = torch.clip(height_data_scanner, min=-5, max=5) # Handle inf values
         mean_height_ray = torch.mean(height_data_scanner, dim=1)
 
-        height_error = torch.square(self.cfg.desired_base_height + mean_height_ray - self._robot.data.root_state_w[:, 2])
-        height_error_mapped = torch.exp(-height_error / 0.01)
-
-
-        # terrain orientation
         height_map_resolution = self._height_scanner.cfg.pattern_cfg.resolution
         height_map_x_points = int(round(self._height_scanner.cfg.pattern_cfg.size[0] / height_map_resolution)) + 1
         height_map_y_points = int(round(self._height_scanner.cfg.pattern_cfg.size[1] / height_map_resolution))
@@ -284,21 +271,26 @@ class GetUpEnv(DirectRLEnv):
         root_roll_w = torch.atan2(torch.sin(root_roll_w), torch.cos(root_roll_w))
         root_pitch_w = torch.atan2(torch.sin(root_pitch_w), torch.cos(root_pitch_w))
         
-        base_orientation =  torch.square(terrain_pitch - root_pitch_w) + torch.square(terrain_roll - root_roll_w)
-        base_orientation = torch.exp(-base_orientation / 0.01)
+        base_orientation_error =  torch.square(terrain_pitch - root_pitch_w) + torch.square(terrain_roll - root_roll_w)
+        base_orientation_mapped = torch.exp(-base_orientation_error / 0.1)
+
+
+        # track_height
+        height_data_scanner = self._height_scanner.data.ray_hits_w[..., 2]
+        height_data_scanner = torch.nan_to_num(height_data_scanner, nan=0.0, posinf=1.0, neginf=-1.0)
+        height_data_scanner = torch.clip(height_data_scanner, min=-5, max=5) # Handle inf values
+        mean_height_ray = torch.mean(height_data_scanner, dim=1)
+
+        height_error = torch.square(self.cfg.desired_base_height + mean_height_ray - self._robot.data.root_state_w[:, 2])
+        height_error_mapped = torch.exp(-height_error / 0.1)
+
+        should_optimize_height = base_orientation_error < 0.5
+        height_error_mapped = height_error_mapped * should_optimize_height
 
         
         # action rate
         action_rate = torch.sum(torch.square(self._actions - self._previous_actions), dim=1)
         action_smoothness = torch.sum(torch.square(self._actions - 2*self._previous_actions + self._previous_previous_actions), dim=1)
-        
-        
-        # undersired contacts
-        net_contact_forces = self._contact_sensor.data.net_forces_w_history
-        is_contact = (
-            torch.max(torch.norm(net_contact_forces[:, :, self._undesired_contact_body_ids], dim=-1), dim=1)[0] > 1.0
-        )
-        contacts = torch.sum(is_contact, dim=1)
         
 
         # joint acceleration
@@ -317,69 +309,6 @@ class GetUpEnv(DirectRLEnv):
             ),
             dim=1,
         )
-
-        ordered_joint_pos = self._robot.data.joint_pos[:, self._ids_joints_order]
-        ordered_default_joint_pos = self._robot.data.default_joint_pos[:, self._ids_joints_order]
-
-        
-        # hip position
-        hip_joints_position = ordered_joint_pos[:,0:4]
-        hip_joints_position_error = torch.square(hip_joints_position - ordered_default_joint_pos[:,0:4])
-        hip_joints_position_reward = torch.sum(hip_joints_position_error,dim=1)
-
-
-        # thigh position
-        thigh_joints_position = ordered_joint_pos[:,4:8]
-        thigh_joints_position_error = torch.square(thigh_joints_position - ordered_default_joint_pos[:,4:8])
-        thigh_joints_position_reward = torch.sum(thigh_joints_position_error,dim=1)
-
-
-        # calf position
-        calf_joints_position = ordered_joint_pos[:,8:12]
-        calf_joints_position_error = torch.square(calf_joints_position - ordered_default_joint_pos[:,8:12])
-        calf_joints_position_reward = torch.sum(calf_joints_position_error,dim=1)
-
-
-        # feet airtime
-        first_contact = self._contact_sensor.compute_first_contact(self.step_dt)[:, self._feet_contact_sensor_ids]
-        last_air_time = self._contact_sensor.data.last_air_time[:, self._feet_contact_sensor_ids]
-        feet_air_time = torch.sum((last_air_time - 0.5) * first_contact, dim=1)
-
-
-        # feet slide
-        contacts_foot = self._contact_sensor.data.net_forces_w_history[:, :, self._feet_contact_sensor_ids, :].norm(dim=-1).max(dim=1)[0] > 1.0
-        body_vel = self._robot.data.body_lin_vel_w[:, self._feet_ids_robot, :2]
-        feet_slide = torch.sum(body_vel.norm(dim=-1) * contacts_foot, dim=1)
-
-        
-
-        # feet height clearance mujoco
-        first_contact = self._contact_sensor.compute_first_contact(self.step_dt)[:, self._feet_contact_sensor_ids]
-        net_contact_forces = self._contact_sensor.data.net_forces_w_history
-        is_contact = (torch.max(torch.norm(net_contact_forces[:, :, self._feet_contact_sensor_ids], dim=-1), dim=1)[0] > 1.0)
-
-        self._swing_peak *= ~is_contact # reset if the foot is in contact
-        self._swing_peak = torch.max(self._swing_peak, self._robot.data.body_pos_w[:, self._feet_ids_robot, 2].clone()) 
-        feet_z_target_error_mujoco = self.cfg.desired_feet_height + torch.cat((mean_height_ray_front.unsqueeze(1).expand(-1, 2), mean_height_ray_back.unsqueeze(1).expand(-1, 2)), dim=1) - self._swing_peak
-        feet_z_target_error_mujoco = torch.clamp(feet_z_target_error_mujoco, min=.0, max=self.cfg.desired_feet_height)
-
-        feet_height_clearance_mujoco_FL = torch.exp(-feet_z_target_error_mujoco[:,0]/ 0.01)
-        feet_height_clearance_mujoco_FR = torch.exp(-feet_z_target_error_mujoco[:,1]/ 0.01)
-        feet_height_clearance_mujoco_RL = torch.exp(-feet_z_target_error_mujoco[:,2]/ 0.01)
-        feet_height_clearance_mujoco_RR = torch.exp(-feet_z_target_error_mujoco[:,3]/ 0.01)
-        #feet_height_clearance_mujoco = torch.sum(torch.square(self._swing_peak / target_height - 1.0) *  first_contact, dim=-1)
-        feet_height_clearance_mujoco = feet_height_clearance_mujoco_FL + feet_height_clearance_mujoco_FR
-        feet_height_clearance_mujoco += feet_height_clearance_mujoco_RL + feet_height_clearance_mujoco_RR
-
-
-        # feet height clearance standard
-        feet_z_target_error = self.cfg.desired_feet_height + torch.cat((mean_height_ray_front.unsqueeze(1).expand(-1, 2), mean_height_ray_back.unsqueeze(1).expand(-1, 2)), dim=1) - self._robot.data.body_pos_w[:, self._feet_ids_robot, 2]
-        # If the raw error is negative, halve it to not discourage too much
-        feet_z_target_error = torch.where(feet_z_target_error < 0.0, feet_z_target_error * 0.2, feet_z_target_error)
-        feet_z_target_error = torch.abs(feet_z_target_error)
-        feet_z_target_error = torch.clamp(feet_z_target_error, min=.0, max=self.cfg.desired_feet_height)
-        foot_velocity_tanh = torch.tanh(2.0 * torch.norm(self._robot.data.body_lin_vel_w[:, self._feet_ids_robot, :2], dim=2))
-        feet_height_clearance = torch.exp(-torch.sum(feet_z_target_error * foot_velocity_tanh, dim=1)/ 0.01)
 
 
 
@@ -404,25 +333,15 @@ class GetUpEnv(DirectRLEnv):
 
         rewards = {
             "track_height_exp": height_error_mapped * self.cfg.height_reward_scale * self.step_dt,
-            "track_orientation_l2": base_orientation * self.cfg.orientation_reward_scale * self.step_dt,
+            "track_orientation_exp": base_orientation_mapped * self.cfg.orientation_reward_scale * self.step_dt,
 
-            "undesired_contacts": contacts * self.cfg.undersired_contact_reward_scale * self.step_dt,
             "action_rate_l2": action_rate * self.cfg.action_rate_reward_scale * self.step_dt,
             "action_smoothness_l2": action_smoothness * self.cfg.action_smoothness_reward_scale * self.step_dt,
 
-            "joints_hip_pos_l2": hip_joints_position_reward * self.cfg.joints_hip_position_reward_scale * self.step_dt,
-            "joints_thigh_pos_l2": thigh_joints_position_reward * self.cfg.joints_thigh_position_reward_scale * self.step_dt,
-            "joints_calf_pos_l2": calf_joints_position_reward * self.cfg.joints_calf_position_reward_scale * self.step_dt,
             "joints_acc_l2": joints_accel * self.cfg.joints_accel_reward_scale * self.step_dt,
             "joints_torques_l2": joints_torques * self.cfg.joints_torque_reward_scale * self.step_dt,
             "joints_energy_l1": joints_energy * self.cfg.joints_energy_reward_scale * self.step_dt,
 
-            "feet_air_time": feet_air_time * self.cfg.feet_air_time_reward_scale * self.step_dt,
-            
-            "feet_height_clearance": feet_height_clearance * self.cfg.feet_height_clearance_reward_scale * self.step_dt,
-            "feet_height_clearance_mujoco": feet_height_clearance_mujoco * self.cfg.feet_height_clearance_mujoco_reward_scale * self.step_dt,
-            
-            "feet_slide": feet_slide * self.cfg.feet_slide_reward_scale * self.step_dt,
             "feet_to_hip_distance_l2": feet_to_hip_distance * self.cfg.feet_to_hip_distance_reward_scale * self.step_dt,
         }
         reward = torch.sum(torch.stack(list(rewards.values())), dim=0)

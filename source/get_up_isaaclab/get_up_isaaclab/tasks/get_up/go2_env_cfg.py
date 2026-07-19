@@ -116,7 +116,7 @@ class EventCfg:
 class Go2FlatEnvCfg(DirectRLEnvCfg):
 
     # env
-    episode_length_s = 20.0
+    episode_length_s = 6.0
     decimation = 4
     action_scale = 0.5
     action_space = 12
@@ -270,24 +270,13 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
     joints_torque_reward_scale = -2.5e-6 
     joints_accel_reward_scale = -2.5e-7
     joints_energy_reward_scale = -1e-4
-    joints_hip_position_reward_scale = -0.1 * 0.0
-    joints_thigh_position_reward_scale = -0.1 * 0.0
-    joints_calf_position_reward_scale = -0.001 * 0.0
    
     
     # Undesired contacts reward scale
-    undersired_contact_reward_scale = -1.0 * 0.0
     action_rate_reward_scale = -0.001
     action_smoothness_reward_scale = -0.001
 
-    # Feet reward scale
-    feet_air_time_reward_scale = 0.5 * 0.0
-
-    feet_height_clearance_reward_scale = 0.25 * 0.0  
-    feet_height_clearance_mujoco_reward_scale = 0.25 * 0.0
-    
-    feet_slide_reward_scale = -0.25 * 0.0
-    
+    # Feet reward scale    
     feet_to_hip_distance_reward_scale = 1.5
     # This is used in loocmotion_env.py for the above reward
     desired_hip_offset = 0.095
