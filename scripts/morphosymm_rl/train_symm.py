@@ -108,7 +108,7 @@ logger = logging.getLogger(__name__)
 
 # PLACEHOLDER: Extension template (do not remove this comment)
 # Import extensions to set up environment tasks
-import get_up_isaaclab.tasks  # noqa: F401
+import get_up_isaaclab.tasks
 
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True

@@ -41,10 +41,7 @@ class GetUpEnv(DirectRLEnv):
             self.num_envs, gym.spaces.flatdim(self.single_action_space), device=self.device
         )
 
-        # Swing peak
-        self._swing_peak = torch.tensor([0.0, 0.0, 0.0, 0.0], device=self.device).repeat(self.num_envs,1)
-        self._swing_peak_periodic = torch.tensor([0.0, 0.0, 0.0, 0.0], device=self.device).repeat(self.num_envs,1)
-        
+
         # Desired Hip Offset
         self._desired_hip_offset = torch.tensor([-self.cfg.desired_hip_offset, self.cfg.desired_hip_offset, -self.cfg.desired_hip_offset, self.cfg.desired_hip_offset], device=self.device)
         
@@ -347,10 +344,7 @@ class GetUpEnv(DirectRLEnv):
         self._previous_previous_actions[env_ids] = 0.0
         
 
-        # Reset swing peak
-        self._swing_peak[env_ids] = torch.tensor([0.0, 0.0, 0.0, 0.0], device=self.device)
-        self._swing_peak_periodic[env_ids] = torch.tensor([0.0, 0.0, 0.0, 0.0], device=self.device)
-        
+
 
         if(self.cfg.use_rma):
             if self.cfg.observation_noise_model:
@@ -358,7 +352,12 @@ class GetUpEnv(DirectRLEnv):
 
         # Reset robot state
         joint_pos = self._robot.data.default_joint_pos[env_ids]
-        joint_pos += torch.zeros_like(joint_pos).uniform_(-0.6, 0.6)
+        joint_pos += torch.zeros_like(joint_pos).uniform_(-3.14159, 3.14159)
+        # we need to project them inside the robots limits
+        joints_limits = self._robot.data.default_joint_pos_limits
+        joints_legs_limits = joints_limits[:,self._ids_joints_order]
+        joint_pos[:, self._ids_joints_order] = torch.clamp(joint_pos[:, self._ids_joints_order], joints_legs_limits[0,:,0], joints_legs_limits[0,:,1])
+
         joint_vel = self._robot.data.default_joint_vel[env_ids]
         default_root_state = self._robot.data.default_root_state[env_ids]
         default_root_state[:, :3] += self._terrain.env_origins[env_ids]
