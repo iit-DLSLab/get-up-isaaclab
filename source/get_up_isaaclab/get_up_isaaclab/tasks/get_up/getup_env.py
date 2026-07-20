@@ -361,6 +361,7 @@ class GetUpEnv(DirectRLEnv):
         joint_vel = self._robot.data.default_joint_vel[env_ids]
         default_root_state = self._robot.data.default_root_state[env_ids]
         default_root_state[:, :3] += self._terrain.env_origins[env_ids]
+        default_root_state[:, 0:2] += torch.zeros_like(default_root_state[:, 0:2]).uniform_(-1.0, 1.0)
         
         # Apply random orientation except for environments with IDs in [1, 100]
         rand_quats = math_utils.random_orientation(env_ids.shape[0], device=self.device)
