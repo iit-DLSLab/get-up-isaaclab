@@ -8,30 +8,10 @@
 
 
 ```bash
-conda env create -f mamba_environment_ros1.yaml
-conda activate get_up_isaaclab_ros1_env
-
 conda env create -f mamba_environment_ros2.yaml
 conda activate get_up_isaaclab_ros2_env
 ```
 
-## Installation Deploy using Docker
-
-1. install docker and run
-
-```bash
-docker build -t get_up_isaaclab_image .
-```
-
-2. put in your .bashrc the following alias
-```bash
-alias get_up_isaaclab_docker='
-if [ ! "$(docker ps -a -q -f name=get_up_isaaclab_container)" ]; then
-   xhost + && docker run -it --rm -v absolute_path_to_this_repo:/home/ -v /tmp/.X11-unix:/tmp/.X11-unix --device=/dev/input/ -e DISPLAY=$DISPLAY -e WAYLAND_DISPLAY=$WAYLAND_DISPLAY -e QT_X11_NO_MITSHM=1 --gpus all --net host --cap-add=sys_nice --name get_up_isaaclab_container get_up_isaaclab_image; \
-else
-   docker exec -it get_up_isaaclab_container bash; \
-fi'
-```
 
 
 ## Run Sim-to-Sim 
