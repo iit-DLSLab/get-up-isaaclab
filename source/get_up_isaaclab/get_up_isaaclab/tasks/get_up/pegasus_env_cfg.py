@@ -248,9 +248,9 @@ class PegasusFlatEnvCfg(DirectRLEnvCfg):
     height_reward_scale = 1.0
     
     # Joint reward scale
-    joints_torque_reward_scale = -2.5e-7 
+    joints_torque_reward_scale = -2.5e-8 
     joints_accel_reward_scale = -2.5e-7
-    joints_energy_reward_scale = -0.5e-4
+    joints_energy_reward_scale = -1.0e-5
    
     
     # Undesired contacts reward scale
