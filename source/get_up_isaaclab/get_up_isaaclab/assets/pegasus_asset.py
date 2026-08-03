@@ -86,7 +86,7 @@ PEGASUS_CFG = ArticulationCfg(
         ),
     ),
     init_state=ArticulationCfg.InitialStateCfg(
-        pos=(0.0, 0.0, 0.7),
+        pos=(0.0, 0.0, 1.0),
         joint_pos={
             ".*L_hip_joint": 0.,
             ".*R_hip_joint": 0.,

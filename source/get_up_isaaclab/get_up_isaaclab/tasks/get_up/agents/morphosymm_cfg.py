@@ -49,7 +49,11 @@ obs_space_names_critic = [
         "joints_vel",
         "joints_pos",
     ]*int(history_length)
-obs_space_names_critic += ["joints_pos", "joints_pos", "base_lin_vel", "invariant_scalar", "invariant_scalar", "clock_data"]
+obs_space_names_critic += [    
+        "clock_data", "clock_data", "clock_data",  # P gains
+        "clock_data", "clock_data", "clock_data",  # D gains
+]
+obs_space_names_critic += ["base_lin_vel", "invariant_scalar", "invariant_scalar", "clock_data"]
 
 
 # Action Space
