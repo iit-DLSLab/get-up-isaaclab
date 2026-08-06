@@ -540,11 +540,22 @@ class GetUpEnv(DirectRLEnv):
 
         contacts_foot = self._contact_sensor.data.net_forces_w_history[:, :, self._feet_contact_sensor_ids, :].norm(dim=-1).max(dim=1)[0] > 1.0
 
+        # Pose height scanner data
+        height_data = (
+            self._height_scanner.data.pos_w[:, 2].unsqueeze(1)
+            - self._height_scanner.data.ray_hits_w[..., 2]
+            - 0.5
+        )
+        height_data = torch.nan_to_num(height_data, nan=0.0, posinf=1.0, neginf=-1.0)
+        height_data = height_data.clip(-1.0, 1.0)
+    
+
+
         obs_privileged = torch.cat((
-                            self._robot.data.root_lin_vel_b,
                             height_error.unsqueeze(1),
                             terrain_pitch.unsqueeze(1),
                             contacts_foot,
+                            height_data
                             ) 
                         , dim=-1)
         return obs_privileged

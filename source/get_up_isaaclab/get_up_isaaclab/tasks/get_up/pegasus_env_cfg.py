@@ -147,14 +147,39 @@ class PegasusFlatEnvCfg(DirectRLEnvCfg):
     
     use_filter_actions = True
 
+
+    # we add a height scanner for perceptive getup
+    height_scanner = RayCasterCfg(
+        prim_path="/World/envs/env_.*/Robot/base",
+        offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.0)),
+        ray_alignment='yaw',
+        pattern_cfg=patterns.GridPatternCfg(resolution=0.2, size=[0.6, 0.6]),
+        debug_vis=False,
+        mesh_prim_paths=["/World/ground"],
+    )
+
+    # an imu sensor in case we don't want any state estimator (for now we can't use sites from the xml)
+    imu = ImuCfg(
+        prim_path="/World/envs/env_.*/Robot/base", 
+        offset=ImuCfg.OffsetCfg(
+            pos=(0, 0, 0)
+        ), 
+        debug_vis=False)
+
+
+
     
     # asymmetric ppo
     use_asymmetric_ppo = True
     if(use_asymmetric_ppo):
         state_space = observation_space
         state_space += 2 #base pitch and height
-        state_space += 3 #clean lin vel b
         state_space += 4 #contacts foot
+        
+        pattern_cfg = pose_height_scanner.pattern_cfg
+        height_map_x_points = int(round(pattern_cfg.size[0] / pattern_cfg.resolution)) + 1
+        height_map_y_points = int(round(pattern_cfg.size[1] / pattern_cfg.resolution)) + 1
+        state_space += height_map_x_points * height_map_y_points
 
 
     # simulation
@@ -187,24 +212,6 @@ class PegasusFlatEnvCfg(DirectRLEnvCfg):
         ),
         debug_vis=False,
     )
-
-    # we add a height scanner for perceptive getup
-    height_scanner = RayCasterCfg(
-        prim_path="/World/envs/env_.*/Robot/base",
-        offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.0)),
-        ray_alignment='yaw',
-        pattern_cfg=patterns.GridPatternCfg(resolution=0.2, size=[0.6, 0.6]),
-        debug_vis=False,
-        mesh_prim_paths=["/World/ground"],
-    )
-
-    # an imu sensor in case we don't want any state estimator (for now we can't use sites from the xml)
-    imu = ImuCfg(
-        prim_path="/World/envs/env_.*/Robot/base", 
-        offset=ImuCfg.OffsetCfg(
-            pos=(-0.02557, 0, 0.04232)
-        ), 
-        debug_vis=False)
 
 
     # scene

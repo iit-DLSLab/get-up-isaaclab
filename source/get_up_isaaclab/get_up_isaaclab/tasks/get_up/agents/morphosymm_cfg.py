@@ -53,7 +53,8 @@ obs_space_names_critic += [
         "clock_data", "clock_data", "clock_data",  # P gains
         "clock_data", "clock_data", "clock_data",  # D gains
 ]
-obs_space_names_critic += ["base_lin_vel", "invariant_scalar", "invariant_scalar", "clock_data"]
+obs_space_names_critic += ["invariant_scalar", "invariant_scalar", "clock_data"]
+obs_space_names_critic += ["heightmap:4x4"]
 
 
 # Action Space
