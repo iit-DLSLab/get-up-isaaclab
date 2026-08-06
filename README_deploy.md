@@ -8,8 +8,8 @@
 
 
 ```bash
-conda env create -f mamba_environment_ros2.yaml
-conda activate get_up_isaaclab_ros2_env
+conda env create -f mamba_environment.yaml
+conda activate get_up_isaaclab_env
 ```
 
 
