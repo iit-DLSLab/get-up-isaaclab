@@ -162,7 +162,7 @@ class PegasusFlatEnvCfg(DirectRLEnvCfg):
     imu = ImuCfg(
         prim_path="/World/envs/env_.*/Robot/base", 
         offset=ImuCfg.OffsetCfg(
-            pos=(0, 0, 0)
+            pos=(0.0, 0.0, 0.0)
         ), 
         debug_vis=False)
 
@@ -173,6 +173,8 @@ class PegasusFlatEnvCfg(DirectRLEnvCfg):
     use_asymmetric_ppo = True
     if(use_asymmetric_ppo):
         state_space = observation_space
+        state_space += 12 #P gain
+        state_space += 12 #D gain
         state_space += 2 #base pitch and height
         state_space += 4 #contacts foot
         

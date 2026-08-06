@@ -171,6 +171,8 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
     use_asymmetric_ppo = True
     if(use_asymmetric_ppo):
         state_space = observation_space
+        state_space += 12 #P gain
+        state_space += 12 #D gain
         state_space += 2 #base pitch and height
         state_space += 4 #contacts foot
 

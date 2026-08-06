@@ -510,6 +510,18 @@ class GetUpEnv(DirectRLEnv):
         asset: Articulation = self.scene[asset_cfg.name]
 
 
+        # PD of the joints
+        hip_stiffness = asset.actuators["hip"].stiffness
+        thigh_stiffness = asset.actuators["thigh"].stiffness
+        calf_stiffness = asset.actuators["calf"].stiffness
+
+        hip_damping = asset.actuators["hip"].damping
+        thigh_damping = asset.actuators["thigh"].damping
+        calf_damping = asset.actuators["calf"].damping
+
+        default_stiffness = asset.data.default_joint_stiffness[0][0]
+        default_damping = asset.data.default_joint_damping[0][0]
+
         # height error
         height_data_scanner = self._height_scanner.data.ray_hits_w[..., 2]
         height_data_scanner = torch.nan_to_num(height_data_scanner, nan=0.0, posinf=1.0, neginf=-1.0)
@@ -552,6 +564,8 @@ class GetUpEnv(DirectRLEnv):
 
 
         obs_privileged = torch.cat((
+                            hip_stiffness/default_stiffness, thigh_stiffness/default_stiffness, calf_stiffness/default_stiffness, #P gain
+                            hip_damping/default_damping, thigh_damping/default_damping, calf_damping/default_damping, #D gain
                             height_error.unsqueeze(1),
                             terrain_pitch.unsqueeze(1),
                             contacts_foot,
