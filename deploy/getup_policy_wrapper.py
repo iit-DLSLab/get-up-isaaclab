@@ -83,11 +83,6 @@ class GetUpPolicyWrapper:
             self._rma_network = load_network(config.rma_network_path, device='cpu')
             self._observation_history_rma = np.zeros((self.history_length, single_observation_space), dtype=np.float32)
 
-        # Learned State Estimator
-        if(config.training_env["use_concurrent_state_est"] == True):
-            self._concurrent_state_est_network = load_network(config.concurrent_state_est_network, device='cpu')
-            self._observation_history_concurrent_state_est = np.zeros((self.history_length, single_observation_space), dtype=np.float32)
-
 
         # Desired joint vector
         self.desired_joint_pos = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])

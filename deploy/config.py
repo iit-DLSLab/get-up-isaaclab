@@ -17,6 +17,15 @@ if(robot == "go2"):
 
     policy_folder_path = dir_path + "/../tested_policies/" + robot + "/2026-04-08_19-12-57"
 
+elif(robot == "pegasus"):
+    Kp_walking = 200.0
+    Kd_walking = 10.0 
+
+    Kp_stand_up_and_down = 200.
+    Kd_stand_up_and_down = 10.
+
+    policy_folder_path = dir_path + "/../tested_policies/" + robot + "/2026-07-20_12-54-27"
+
 else:
     raise ValueError(f"Robot {robot} not supported")
 
