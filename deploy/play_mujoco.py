@@ -91,7 +91,7 @@ if __name__ == '__main__':
             heightmap.update_height_map(env.mjData.qpos[0:3] + offset_world_frame, yaw=env.base_ori_euler_xyz[2])
 
         # RL controller --------------------------------------------------------------
-        if env.step_num % round(1 / (getup_policy.RL_FREQ * simulation_dt)) == 0:            
+        if env.step_num % round(1 / (getup_policy.RL_FREQ * simulation_dt)) == 0 and env.step_num > 5000:            
             
             desired_joint_pos = getup_policy.compute_control(
                         joints_pos=joints_pos, 
