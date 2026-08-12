@@ -16,6 +16,7 @@ Reinforcement learning implementation of the **quadruped get-up task** in IsaacL
 
 Features:
 - [Rapid Motor Adaptation](https://arxiv.org/pdf/2107.04034)
+- [Morphological Symmetries](https://arxiv.org/pdf/2403.17320)
 - Identification of robot parameters for sim2real using [pace](https://github.com/leggedrobotics/pace-sim2real) via our repo [sim2real-robot-identification](https://github.com/iit-DLSLab/sim2real-robot-identification)
 - Sim-to-Sim in [Mujoco](https://github.com/google-deepmind/mujoco)
 - Sim-to-Real using ROS2 
