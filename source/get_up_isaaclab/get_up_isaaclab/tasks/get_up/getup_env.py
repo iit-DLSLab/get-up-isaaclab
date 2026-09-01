@@ -173,7 +173,6 @@ class GetUpEnv(DirectRLEnv):
         self._robot.set_joint_position_target(self._processed_actions, joint_ids=self._ids_joints_order)
 
 
-
     def _get_observations(self) -> dict:    
         
         # Standard Obs for the Actor/Critic
@@ -197,7 +196,6 @@ class GetUpEnv(DirectRLEnv):
             obs = torch.flatten(self._observation_history, start_dim=1)
 
 
-
         # If RMA, we add some other predicted obs
         if(self.cfg.use_rma):
             # Predict the RMA observation
@@ -216,7 +214,6 @@ class GetUpEnv(DirectRLEnv):
         else:
             observations["critic"] = obs
         # ------------------------------------------------------------------------------------------
-
 
         return observations
 
@@ -309,7 +306,6 @@ class GetUpEnv(DirectRLEnv):
         )
 
 
-
         # feet to hip distance
         ROT_W2H = math_utils.matrix_from_quat(math_utils.yaw_quat(self._robot.data.root_quat_w.torch))
         feet_to_base_w = self._robot.data.body_pos_w[:, self._feet_ids_robot, :3] - self._robot.data.root_state_w[:, :3].unsqueeze(1)
@@ -383,8 +379,6 @@ class GetUpEnv(DirectRLEnv):
         self._previous_actions[env_ids] = 0.0
         self._previous_previous_actions[env_ids] = 0.0
         
-
-
 
         if(self.cfg.use_rma):
             if self.cfg.observation_noise_model:
