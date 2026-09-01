@@ -433,62 +433,6 @@ class GetUpEnv(DirectRLEnv):
         self.extras["log"].update(extras)
 
 
-
-    def _get_concurrent_state_estimation(self,):
-        joint_pos_error_ordered = self._robot.data.joint_pos[:, self._ids_joints_order] - self._robot.data.default_joint_pos[:, self._ids_joints_order]
-        joint_vel_ordered = self._robot.data.joint_vel[:, self._ids_joints_order]
-        # Using a supervised learning state estimation
-        obs_concurrent_state_est = torch.cat(
-            [
-                tensor
-                for tensor in (
-                    self._imu.data.lin_acc_b,
-                    self._imu.data.ang_vel_b,
-                    self._robot.data.projected_gravity_b,
-                    joint_pos_error_ordered,
-                    joint_vel_ordered * self.cfg.observation_joint_vel_scale,
-                    self._actions,
-                )
-                if tensor is not None
-            ],
-            dim=-1,
-        )
-        #the bottom element is the newest observation!!
-        self._observation_history_concurrent_state_est = torch.cat((self._observation_history_concurrent_state_est[:,1:,:], obs_concurrent_state_est.unsqueeze(1)), dim=1)
-        obs_concurrent_state_est = torch.flatten(self._observation_history_concurrent_state_est, start_dim=1)     
-
-        # Add noise to the observation - this is usually done in direct_rl.py in IsaacLab, but 
-        # the obs of concurrent SE does not pass from there - its prediciton yes instead!
-        if self.cfg.observation_noise_model:          
-            obs_concurrent_state_est = self._observation_noise_model_concurrent_state_est(obs_concurrent_state_est)   
-
-        # Saving data
-        output_concurrent_state_est = self._robot.data.root_lin_vel_b
-        self._concurrent_state_est_network.dataset.add_sample(obs_concurrent_state_est, output_concurrent_state_est)
-
-        # Prediction
-        num_episode_from_start = self.common_step_counter / 24. #self.max_episode_length #HACK this should be taken from rsl rl
-        num_final_episode_from_start = 8000.
-        if num_episode_from_start > self.cfg.concurrent_state_est_ep_saving_start:
-            with torch.no_grad(): 
-                prediction_concurrent_state_est = self._concurrent_state_est_network(obs_concurrent_state_est)
-            linear_velocity_b = prediction_concurrent_state_est[:, :3]
-        else:
-            linear_velocity_b = self._robot.data.root_lin_vel_b
-
-        # Train at some interval
-        if (num_episode_from_start % self.cfg.concurrent_state_est_ep_saving_interval == 0 and 
-            num_episode_from_start > self.cfg.concurrent_state_est_ep_saving_start - 1 and 
-                num_episode_from_start < num_final_episode_from_start - 500):  # Adjust the interval as needed
-            self._concurrent_state_est_network.train_network(batch_size=self.cfg.concurrent_state_est_batch_size, 
-                                                            epochs=self.cfg.concurrent_state_est_train_epochs, 
-                                                            learning_rate=self.cfg.concurrent_state_est_lr, device=self.device)
-            # Save the network
-            self._concurrent_state_est_network.save_network("concurrent_state_estimator.pth", self.device)    
-
-        return linear_velocity_b  
-
-
     def _get_rma(self, ):
         joint_pos_error_ordered = self._robot.data.joint_pos[:, self._ids_joints_order] - self._robot.data.default_joint_pos[:, self._ids_joints_order]
         joint_vel_ordered = self._robot.data.joint_vel[:, self._ids_joints_order]
