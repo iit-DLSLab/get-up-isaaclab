@@ -23,8 +23,8 @@ python -m pip install -e source/get_up_isaaclab
 - To train:
 
 ```bash
-python scripts/rsl_rl/train.py --task=GetUp-Go2-Flat --num_envs=4096 --headless
-python scripts/rsl_rl/train.py --task=GetUp-Go2-Rough-Blind --num_envs=4096 --headless
+python scripts/rsl_rl/train.py --task=GetUp-Go2-Flat --num_envs=4096
+python scripts/rsl_rl/train.py --task=GetUp-Go2-Rough-Blind --num_envs=4096
 ```
 
 

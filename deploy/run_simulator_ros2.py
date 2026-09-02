@@ -34,7 +34,7 @@ if os.environ.get("GET_UP_SOURCED") != "1":
 
 import rclpy 
 from rclpy.node import Node 
-from dls2_interface.msg import BaseState, BlindState, Imu, TrajectoryGenerator
+from dls2_interface.msg import BaseState, BlindState, Imu, ControlSignal
 from unitree_go.msg import LowState, MotorState, IMUState
 
 import time
@@ -67,13 +67,13 @@ class SimulatorROS2(Node):
         super().__init__('SimulatorROS2')
 
         # Subscribers and Publishers
-        self.publisher_base_state = self.create_publisher(BaseState,"base_state", 1)
-        self.publisher_blind_state = self.create_publisher(BlindState,"blind_state", 1)
-        self.publisher_imu = self.create_publisher(Imu,"imu", 1)
+        self.publisher_base_state = self.create_publisher(BaseState,"/base_state", 1)
+        self.publisher_blind_state = self.create_publisher(BlindState,"/blind_state_legged", 1)
+        self.publisher_imu = self.create_publisher(Imu,"/imu", 1)
 
-        self.publisher_low_state = self.create_publisher(LowState,"lowstate", 1)
+        self.publisher_low_state = self.create_publisher(LowState,"/lowstate", 1)
 
-        self.subscriber_trajectory_generator = self.create_subscription(TrajectoryGenerator,"trajectory_generator", self.get_trajectory_generator_callback, 1)
+        self.subscriber_control_signal = self.create_subscription(ControlSignal,"/control_signal_legged", self.get_control_signal_callback, 1)
 
         self.timer = self.create_timer(1.0/SCHEDULER_FREQ, self.compute_simulator_step_callback)
 
@@ -107,7 +107,7 @@ class SimulatorROS2(Node):
         self.Kd = 0
 
 
-    def get_trajectory_generator_callback(self, msg):
+    def get_control_signal_callback(self, msg):
 
         joints_position = np.array(msg.joints_position)
 
