@@ -31,8 +31,8 @@ if os.environ.get("GET_UP_SOURCED") != "1":
     os.execv("/bin/bash", ["bash", "-c", cmd])
 
 
-import rclpy 
-from rclpy.node import Node 
+import rclpy
+from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from dls2_interface.msg import BaseState, BlindState, Imu, ControlSignal
 
@@ -44,10 +44,12 @@ import threading
 
 import copy
 
-# Gym and Simulation related imports
+# Simulation related imports
 import mujoco
-from gym_quadruped.quadruped_env import QuadrupedEnv
-from gym_quadruped.utils.quadruped_utils import LegsAttr
+import mujoco.viewer
+file_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(file_path + "/mujoco_utils/")
+import mujoco_utils
 
 
 # GetUp Policy imports
@@ -70,25 +72,23 @@ class ControllerROS2(Node):
     def __init__(self):
         super().__init__('ControllerROS2')
 
-        # Mujoco env
-        robot_name = config.robot
-        scene_name = config.scene
-        simulation_dt = 0.002
+        # Mujoco model and data
+        self.mjModel = mujoco.MjModel.from_xml_path(file_path + "/mujoco_utils/robot_model/" + config.robot + "/" + config.scene + ".xml")
+        self.mjData = mujoco.MjData(self.mjModel)
+        keyframe_id = mujoco.mj_name2id(self.mjModel, mujoco.mjtObj.mjOBJ_KEY, "down")
+        self.mjData.qpos = self.mjModel.key_qpos[keyframe_id]
+        mujoco.mj_forward(self.mjModel, self.mjData)
 
-
-        # Create the quadruped robot environment -----------------------------------------------------------
-        self.env = QuadrupedEnv(
-            robot=robot_name,
-            scene=scene_name,
-            sim_dt=simulation_dt,
-            base_vel_command_type="human",  # "forward", "random", "forward+rotate", "human"
-        )
-        self.env.reset(random=False)
-        
         self.last_render_time = time.time()
         if USE_MUJOCO_RENDER:
-            self.env.render()   
-                 
+            self.viewer = mujoco.viewer.launch_passive(
+                self.mjModel,
+                self.mjData,
+                show_left_ui=False,
+                show_right_ui=False,
+            )
+            mujoco.mjv_defaultFreeCamera(self.mjModel, self.viewer.cam)
+
 
         # Subscribers and Publishers
         self.subscription_base_state = self.create_subscription(BaseState,"/base_state", self.get_base_state_callback, 1)
@@ -97,7 +97,7 @@ class ControllerROS2(Node):
 
         self.subscription_joy = self.create_subscription(Joy,"/joy", self.get_joy_callback, 1)
         self.last_joy_time = None
-        
+
         self.publisher_control_signal = self.create_publisher(ControlSignal,"/control_signal_legged", 1)
         self.sequence_id = 0 # To keep track of the last msg sent, useful for debugging and synchronization
         RL_FREQ = 1./(config.training_env["sim"]["dt"]*config.training_env["decimation"])  # Hz, frequency of the RL controller
@@ -106,7 +106,7 @@ class ControllerROS2(Node):
 
         # Safety check to not do anything until a first base and blind state are received
         self.first_message_base_arrived = False
-        self.first_message_joints_arrived = False 
+        self.first_message_joints_arrived = False
         self.first_message_imu_arrived = False
 
         # Timing stuff
@@ -128,19 +128,18 @@ class ControllerROS2(Node):
         self.imu_angular_velocity = np.zeros(3)
         self.imu_orientation = np.zeros(4)
 
-        
+        # Commands
+        self.ref_base_lin_vel_H = np.zeros(3)
+        self.ref_base_ang_yaw_dot = 0.0
+
+
         # Initialization of variables used in the main control loop --------------------------------
-        self.get_up_policy = GetUpPolicyWrapper(env=self.env)
+        self.get_up_policy = GetUpPolicyWrapper(mjModel=self.mjModel)
 
 
-        self.stand_up_and_down_actions = LegsAttr(*[np.zeros((1, int(self.env.mjModel.nu/4))) for _ in range(4)])
-        keyframe_id = mujoco.mj_name2id(self.env.mjModel, mujoco.mjtObj.mjOBJ_KEY, "down")
-        goDown_qpos = self.env.mjModel.key_qpos[keyframe_id]
-        self.stand_up_and_down_actions.FL = goDown_qpos[7:10]
-        self.stand_up_and_down_actions.FR = goDown_qpos[10:13]
-        self.stand_up_and_down_actions.RL = goDown_qpos[13:16]
-        self.stand_up_and_down_actions.RR = goDown_qpos[16:19]
-        self.joint_positions = goDown_qpos[7:19]
+        goDown_qpos = self.mjModel.key_qpos[keyframe_id]
+        self.stand_up_and_down_actions = goDown_qpos[7:19].copy()
+        self.joint_positions = goDown_qpos[7:19].copy()
 
 
         # Interactive Command Line ----------------------------
@@ -150,27 +149,27 @@ class ControllerROS2(Node):
         thread_console.daemon = True
         thread_console.start()
 
-    
+
     def get_joy_callback(self, msg):
         """
-        Callback function to handle joystick input. Joystick used is a 
+        Callback function to handle joystick input. Joystick used is a
         8Bitdi Ultimate 2C Wireless Controller.
         """
 
         filter_joystick = 0.7
-        self.env._ref_base_lin_vel_H[0] = self.env._ref_base_lin_vel_H[0]*filter_joystick + (msg.axes[1]/3.5)*(1-filter_joystick)  # Forward/Backward
-        self.env._ref_base_lin_vel_H[1] = self.env._ref_base_lin_vel_H[1]*filter_joystick + (msg.axes[0]/3.5)*(1-filter_joystick)  # Left/Right
-        self.env._ref_base_ang_yaw_dot = self.env._ref_base_ang_yaw_dot*filter_joystick + (msg.axes[3]/2.)*(1-filter_joystick)  # Yaw
+        self.ref_base_lin_vel_H[0] = self.ref_base_lin_vel_H[0]*filter_joystick + (msg.axes[1]/3.5)*(1-filter_joystick)  # Forward/Backward
+        self.ref_base_lin_vel_H[1] = self.ref_base_lin_vel_H[1]*filter_joystick + (msg.axes[0]/3.5)*(1-filter_joystick)  # Left/Right
+        self.ref_base_ang_yaw_dot = self.ref_base_ang_yaw_dot*filter_joystick + (msg.axes[3]/2.)*(1-filter_joystick)  # Yaw
 
         self.last_joy_time = time.time()
 
         #kill the node if the button is pressed
         if msg.buttons[8] == 1:
-            self.get_logger().info("Joystick button pressed, shutting down the node.") 
+            self.get_logger().info("Joystick button pressed, shutting down the node.")
             # This will kill the robot hal
             os.system("kill -9 $(ps -u | grep -m 1 hal | grep -o \"^[^ ]* *[0-9]*\" | grep -o \"[0-9]*\")")
             # This will kill the process running this script
-            os.system("pkill -f play_ros2.py") 
+            os.system("pkill -f play_ros2.py")
             exit(0)
 
 
@@ -191,13 +190,13 @@ class ControllerROS2(Node):
         self.joint_velocities = np.array(msg.joints_velocity)
 
         self.first_message_joints_arrived = True
-     
-        
+
+
     def get_imu_callback(self, msg):
-        self.imu_linear_acceleration = np.array(msg.linear_acceleration) 
-        self.imu_angular_velocity = np.array(msg.angular_velocity) 
+        self.imu_linear_acceleration = np.array(msg.linear_acceleration)
+        self.imu_angular_velocity = np.array(msg.angular_velocity)
         # For the quaternion, the order is [x, y, z, w] on DLS2 but here we want [w, x, y, z] (mujoco convention)
-        self.imu_orientation = np.roll(np.array(msg.orientation), 1) 
+        self.imu_orientation = np.roll(np.array(msg.orientation), 1)
 
         self.first_message_imu_arrived = True
 
@@ -209,79 +208,62 @@ class ControllerROS2(Node):
             self.loop_time = (start_time - self.last_start_time)
         self.last_start_time = start_time
         simulation_dt = self.loop_time
-        
+
 
         # Safety check to not do anything until a first base and blind state are received
         if(self.first_message_imu_arrived==False or self.first_message_joints_arrived==False):
             return
-        
+
         # Update the mujoco model
         # Note that in case of IMU or concurrent state estimator, these info below are not used,
         # In the case we have a state estimator, this is usefull only for debugging visually
-        self.env.mjData.qpos[0:3] = copy.deepcopy(self.position)
-        self.env.mjData.qvel[0:3] = copy.deepcopy(self.linear_velocity)
-        self.env.mjData.qpos[3:7] = copy.deepcopy(self.imu_orientation)
-        self.env.mjData.qvel[3:6] = copy.deepcopy(self.imu_angular_velocity)
-        
+        self.mjData.qpos[0:3] = copy.deepcopy(self.position)
+        self.mjData.qvel[0:3] = copy.deepcopy(self.linear_velocity)
+        self.mjData.qpos[3:7] = copy.deepcopy(self.imu_orientation)
+        self.mjData.qvel[3:6] = copy.deepcopy(self.imu_angular_velocity)
+
 
         # These info instead are used for sure in all the cases
-        self.env.mjData.qpos[7:] = copy.deepcopy(self.joint_positions)
-        self.env.mjData.qvel[6:] = copy.deepcopy(self.joint_velocities)
-        self.env.mjModel.opt.timestep = simulation_dt
-        mujoco.mj_forward(self.env.mjModel, self.env.mjData) 
-        
+        self.mjData.qpos[7:19] = copy.deepcopy(self.joint_positions)
+        self.mjData.qvel[6:18] = copy.deepcopy(self.joint_velocities)
+        self.mjModel.opt.timestep = simulation_dt
+        mujoco.mj_forward(self.mjModel, self.mjData)
+
         # Safety check for joystick timeout
         if(self.last_joy_time is not None and time.time() - self.last_joy_time > 1.0):
-            self.env._ref_base_lin_vel_H[0] = 0.0
-            self.env._ref_base_lin_vel_H[1] = 0.0
-            self.env._ref_base_ang_yaw_dot = 0.0
+            self.ref_base_lin_vel_H[0] = 0.0
+            self.ref_base_lin_vel_H[1] = 0.0
+            self.ref_base_ang_yaw_dot = 0.0
             print("Joystick timeout, stopping the robot")
             self.last_joy_time = None
-            
 
-        env = self.env
+
         get_up_policy = self.get_up_policy
-        
-        qpos, qvel = env.mjData.qpos, env.mjData.qvel
 
+        qpos, qvel = self.mjData.qpos, self.mjData.qvel
 
-
-        joints_pos = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
-        joints_pos.FL = qpos[env.legs_qpos_idx.FL]
-        joints_pos.FR = qpos[env.legs_qpos_idx.FR]
-        joints_pos.RL = qpos[env.legs_qpos_idx.RL]
-        joints_pos.RR = qpos[env.legs_qpos_idx.RR]
+        joints_pos_leg = qpos[7:19]
+        joints_vel_leg = qvel[6:18]
 
         # variable saved for goDown and goUp motion
-        self.joint_positions = np.concatenate([joints_pos.FL, joints_pos.FR, joints_pos.RL, joints_pos.RR], axis=0).flatten()
-    
-        joints_vel = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
-        joints_vel.FL = qvel[env.legs_qvel_idx.FL]
-        joints_vel.FR = qvel[env.legs_qvel_idx.FR]
-        joints_vel.RL = qvel[env.legs_qvel_idx.RL]
-        joints_vel.RR = qvel[env.legs_qvel_idx.RR]
-        ref_base_lin_vel, ref_base_ang_vel = env.target_base_vel()
+        self.joint_positions = joints_pos_leg.copy()
 
 
         if(self.console.isRLActivated):
 
             desired_joint_pos = get_up_policy.compute_control(
-                        joints_pos=joints_pos, 
-                        joints_vel=joints_vel,
+                        joints_pos_leg=joints_pos_leg,
+                        joints_vel_leg=joints_vel_leg,
                         imu_angular_velocity=self.imu_angular_velocity,
                         imu_orientation=self.imu_orientation)
-            
+
             # Impedence Loop
             Kp = get_up_policy.Kp_walking
             Kd = get_up_policy.Kd_walking
 
 
         else:
-            desired_joint_pos = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
-            desired_joint_pos.FL = self.stand_up_and_down_actions.FL
-            desired_joint_pos.FR = self.stand_up_and_down_actions.FR
-            desired_joint_pos.RL = self.stand_up_and_down_actions.RL
-            desired_joint_pos.RR = self.stand_up_and_down_actions.RR
+            desired_joint_pos = self.stand_up_and_down_actions
 
             # Impedence Loop
             Kp = get_up_policy.Kp_stand_up_and_down
@@ -292,21 +274,22 @@ class ControllerROS2(Node):
         control_signal_msg.timestamp = float(self.get_clock().now().nanoseconds)
         control_signal_msg.sequence_id = int(self.sequence_id % 1000)  # To avoid overflow, we reset the sequence id after it reaches a certain value
         self.sequence_id += 1
-        control_signal_msg.joints_position = np.array([desired_joint_pos.FL, desired_joint_pos.FR, desired_joint_pos.RL, desired_joint_pos.RR]).flatten().tolist()
+        control_signal_msg.joints_position = np.array(desired_joint_pos).flatten().tolist()
         control_signal_msg.joints_velocity = np.zeros(12).tolist()
         control_signal_msg.joints_torques = np.zeros(12).tolist()
         control_signal_msg.kp = (np.ones(12) * Kp).tolist()
         control_signal_msg.kd = (np.ones(12) * Kd).tolist()
 
         self.publisher_control_signal.publish(control_signal_msg)
-        
-        
-        
+
+
+
         # Render the simulation at a certain frequency -----------------------------------------------------------
         if USE_MUJOCO_RENDER:
             RENDER_FREQ = 30  # Hz
-            if time.time() - self.last_render_time > 1.0 / RENDER_FREQ or self.env.step_num == 1:
-                self.env.render()
+            if time.time() - self.last_render_time > 1.0 / RENDER_FREQ:
+                self.viewer.cam.lookat[:] = mujoco_utils.base_pos(self.mjData)
+                self.viewer.sync()
                 self.last_render_time = time.time()
 
 
@@ -314,13 +297,13 @@ class ControllerROS2(Node):
 
 #---------------------------
 if __name__ == '__main__':
-    
+
     print('Hello from get-up-dls-isaaclab ros node.')
-    
+
     rclpy.init()
     controller_ros2_node = ControllerROS2()
     rclpy.spin(controller_ros2_node)
-    
+
     controller_ros2_node.destroy_node()
     rclpy.shutdown()
 

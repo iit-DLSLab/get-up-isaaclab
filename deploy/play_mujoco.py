@@ -7,18 +7,16 @@ import time
 import numpy as np
 from tqdm import tqdm
 import sys
-import os 
+import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(dir_path+"/../")
 sys.path.append(dir_path+"/../scripts/rsl_rl")
 
-# Gym and Simulation related imports
+# Simulation related imports
 import mujoco
-from gym_quadruped.quadruped_env import QuadrupedEnv
-from gym_quadruped.utils.quadruped_utils import LegsAttr
-
-from gym_quadruped.sensors.heightmap import HeightMap
-from gym_quadruped.utils.mujoco.visual import render_sphere
+import mujoco.viewer
+sys.path.append(dir_path+"/mujoco_utils/")
+import mujoco_utils
 
 # GetUp Policy imports
 from getup_policy_wrapper import GetUpPolicyWrapper
@@ -34,71 +32,54 @@ if __name__ == '__main__':
     simulation_dt = 0.002
 
 
-    # Create the quadruped robot environment -----------------------------------------------------------
-    env = QuadrupedEnv(
-        robot=robot_name,
-        scene=scene_name,
-        sim_dt=simulation_dt,
-        base_vel_command_type="human",  # "forward", "random", "forward+rotate", "human"
+    # Create the mujoco model ---------------------------------------------------------------------
+    mjModel = mujoco.MjModel.from_xml_path(dir_path + "/mujoco_utils/robot_model/" + robot_name + "/" + scene_name + ".xml")
+    mjModel.opt.timestep = simulation_dt
+    mjData = mujoco.MjData(mjModel)
+    keyframe_id = mujoco.mj_name2id(mjModel, mujoco.mjtObj.mjOBJ_KEY, "home")
+    mjData.qpos = mjModel.key_qpos[keyframe_id]
+    mujoco.mj_forward(mjModel, mjData)
+
+    viewer = mujoco.viewer.launch_passive(
+        mjModel,
+        mjData,
+        show_left_ui=False,
+        show_right_ui=False,
     )
-
-
-    env.reset(random=False)
-    env.render()  # Pass in the first render call any mujoco.viewer.KeyCallbackType
-    env.viewer.user_scn.flags[mujoco.mjtRndFlag.mjRND_SHADOW] = False
-    env.viewer.user_scn.flags[mujoco.mjtRndFlag.mjRND_REFLECTION] = False
+    mujoco.mjv_defaultFreeCamera(mjModel, viewer.cam)
+    viewer.user_scn.flags[mujoco.mjtRndFlag.mjRND_SHADOW] = False
+    viewer.user_scn.flags[mujoco.mjtRndFlag.mjRND_REFLECTION] = False
 
 
 
     # Initialization of variables used in the main control loop --------------------------------
-    getup_policy = GetUpPolicyWrapper(env=env)
+    getup_policy = GetUpPolicyWrapper(mjModel=mjModel)
 
-    if(getup_policy.use_vision):
-        resolution_heightmap = config.training_env["height_scanner2"]["pattern_cfg"]["resolution"]
-        num_rows_heightmap = round(config.training_env["height_scanner2"]["pattern_cfg"]["size"][0]/resolution_heightmap) + 1
-        num_cols_heightmap = round(config.training_env["height_scanner2"]["pattern_cfg"]["size"][1]/resolution_heightmap) + 1
-        heightmap_offset = config.training_env["height_scanner2"]["offset"]
-        heightmap = HeightMap(num_rows=num_rows_heightmap, num_cols=num_cols_heightmap, dist_x=resolution_heightmap, dist_y=resolution_heightmap, mj_model=env.mjModel, mj_data=env.mjData)     
-    
 
     # --------------------------------------------------------------
     RENDER_FREQ = 30  # Hz
     last_render_time = time.time()
+    step_num = 1
 
-    while True:
+    while viewer.is_running():
         step_start = time.time()
-        
+
         # Get the current state of the robot -----------------------------------------------------
-        qpos, qvel = env.mjData.qpos, env.mjData.qvel
-        imu_angular_velocity = env.mjData.sensordata[3:6]
-        imu_orientation = env.mjData.sensordata[9:13]
+        qpos, qvel = mjData.qpos, mjData.qvel
+        imu_angular_velocity = mjData.sensordata[3:6]
+        imu_orientation = mjData.sensordata[9:13]
 
-        joints_pos = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
-        joints_pos.FL = qpos[env.legs_qpos_idx.FL]
-        joints_pos.FR = qpos[env.legs_qpos_idx.FR]
-        joints_pos.RL = qpos[env.legs_qpos_idx.RL]
-        joints_pos.RR = qpos[env.legs_qpos_idx.RR]
-    
-        joints_vel = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
-        joints_vel.FL = qvel[env.legs_qvel_idx.FL]
-        joints_vel.FR = qvel[env.legs_qvel_idx.FR]
-        joints_vel.RL = qvel[env.legs_qvel_idx.RL]
-        joints_vel.RR = qvel[env.legs_qvel_idx.RR]
-        ref_base_lin_vel, ref_base_ang_vel = env.target_base_vel()
-
-        if(getup_policy.use_vision):
-            offset_world_frame = heightmap_offset["pos"] @ heading_orientation_SO3.T
-            heightmap.update_height_map(env.mjData.qpos[0:3] + offset_world_frame, yaw=env.base_ori_euler_xyz[2])
+        joints_pos_leg = qpos[7:19]
+        joints_vel_leg = qvel[6:18]
 
         # RL controller --------------------------------------------------------------
-        if env.step_num % round(1 / (getup_policy.RL_FREQ * simulation_dt)) == 0 and env.step_num > 5000:            
-            
+        if step_num % round(1 / (getup_policy.RL_FREQ * simulation_dt)) == 0 and step_num > 5000:
+
             desired_joint_pos = getup_policy.compute_control(
-                        joints_pos=joints_pos, 
-                        joints_vel=joints_vel,
+                        joints_pos_leg=joints_pos_leg,
+                        joints_vel_leg=joints_vel_leg,
                         imu_angular_velocity=imu_angular_velocity,
-                        imu_orientation=imu_orientation,
-                        heightmap_data=heightmap.data if getup_policy.use_vision else None)
+                        imu_orientation=imu_orientation)
 
         # PD controller --------------------------------------------------------------
         else:
@@ -108,26 +89,13 @@ if __name__ == '__main__':
         Kp = getup_policy.Kp_walking
         Kd = getup_policy.Kd_walking
 
-        error_joints_pos = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
-        error_joints_pos.FL = desired_joint_pos.FL - joints_pos.FL
-        error_joints_pos.FR = desired_joint_pos.FR - joints_pos.FR
-        error_joints_pos.RL = desired_joint_pos.RL - joints_pos.RL
-        error_joints_pos.RR = desired_joint_pos.RR - joints_pos.RR
-        
-        tau = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
-        tau.FL = Kp * (error_joints_pos.FL) - Kd * joints_vel.FL
-        tau.FR = Kp * (error_joints_pos.FR) - Kd * joints_vel.FR
-        tau.RL = Kp * (error_joints_pos.RL) - Kd * joints_vel.RL
-        tau.RR = Kp * (error_joints_pos.RR) - Kd * joints_vel.RR
+        tau_leg = Kp * (desired_joint_pos - joints_pos_leg) - Kd * joints_vel_leg
 
 
         # Set control and mujoco step ----------------------------------------------------------------------
-        action = np.zeros(env.mjModel.nu)
-        action[env.legs_tau_idx.FL] = tau.FL.reshape((3,))
-        action[env.legs_tau_idx.FR] = tau.FR.reshape((3,))
-        action[env.legs_tau_idx.RL] = tau.RL.reshape((3,))
-        action[env.legs_tau_idx.RR] = tau.RR.reshape((3,))
-        state, reward, is_terminated, is_truncated, info = env.step(action=action)
+        mjData.ctrl[0:12] = tau_leg
+        mujoco.mj_step(mjModel, mjData)
+        step_num += 1
 
 
         # Sleep to match real-time ---------------------------------------------------------
@@ -137,24 +105,7 @@ if __name__ == '__main__':
             time.sleep(simulation_dt - (loop_elapsed_time))
 
         # Render only at a certain frequency -----------------------------------------------------------------
-        if time.time() - last_render_time > 1.0 / RENDER_FREQ or env.step_num == 1:
-            env.render()
+        if time.time() - last_render_time > 1.0 / RENDER_FREQ or step_num == 1:
+            viewer.cam.lookat[:] = mujoco_utils.base_pos(mjData)
+            viewer.sync()
             last_render_time = time.time()
-
-            if(getup_policy.use_vision):
-                if heightmap.data is not None:
-                    for i in range(heightmap.data.shape[0]):
-                        for j in range(heightmap.data.data.shape[1]):
-                            heightmap.geom_ids[i, j] = render_sphere(
-                                viewer=env.viewer,
-                                position=([heightmap.data[i][j][0][0], heightmap.data[i][j][0][1], heightmap.data[i][j][0][2]]),
-                                diameter=0.02,
-                                color=[0, 1, 0, 0.5],
-                                geom_id=heightmap.geom_ids[i, j],
-                            )
-
-
-                
-
-    env.close()
-

@@ -15,9 +15,6 @@ import torch
 
 import config
 
-# Gym and Simulation related imports
-from gym_quadruped.utils.quadruped_utils import LegsAttr
-
 
 import sys
 import os 
@@ -28,7 +25,7 @@ from supervised_learning_networks import load_network
 
 
 class GetUpPolicyWrapper:
-    def __init__(self, env):
+    def __init__(self, mjModel):
 
         self.policy = ort.InferenceSession(config.policy_folder_path + "/exported/policy.onnx")
         self.Kp_walking = config.Kp_walking
@@ -41,17 +38,11 @@ class GetUpPolicyWrapper:
 
         # RL controller initialization -------------------------------------------------------------
         self.action_scale = config.training_env["action_scale"]
-        self.rl_actions = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
-        self.past_rl_actions = np.zeros(env.mjModel.nu)
-        
-        self.default_joint_pos = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
-        
-        keyframe_id = mujoco.mj_name2id(env.mjModel, mujoco.mjtObj.mjOBJ_KEY, "home")
-        standUp_qpos = env.mjModel.key_qpos[keyframe_id]
-        self.default_joint_pos.FL = standUp_qpos[7:10]
-        self.default_joint_pos.FR = standUp_qpos[10:13]
-        self.default_joint_pos.RL = standUp_qpos[13:16]
-        self.default_joint_pos.RR = standUp_qpos[16:19]
+        self.past_rl_actions = np.zeros(12)
+
+        keyframe_id = mujoco.mj_name2id(mjModel, mujoco.mjtObj.mjOBJ_KEY, "home")
+        standUp_qpos = mjModel.key_qpos[keyframe_id]
+        self.default_joint_pos_leg = standUp_qpos[7:19]
 
         # Observation space initialization -------------------------------------------------------
         self.observation_space = config.training_env["single_observation_space"]
@@ -85,7 +76,7 @@ class GetUpPolicyWrapper:
 
 
         # Desired joint vector
-        self.desired_joint_pos = LegsAttr(*[np.zeros((1, int(env.mjModel.nu/4))) for _ in range(4)])
+        self.desired_joint_pos = np.zeros(12)
 
 
     def _get_projected_gravity(self, quat_wxyz):        
@@ -107,43 +98,50 @@ class GetUpPolicyWrapper:
         return projected_gravity.numpy().flatten()
 
 
-    def compute_control(self, 
-            joints_pos, 
-            joints_vel,
+    def compute_control(self,
+            joints_pos_leg,
+            joints_vel_leg,
             imu_linear_acceleration=None,
             imu_angular_velocity=None,
-            imu_orientation=None,
-            heightmap_data=None):
+            imu_orientation=None):
 
-        # Update Observation ----------------------        
+        # Update Observation ----------------------
         base_projected_gravity = self._get_projected_gravity(imu_orientation)
-        base_ang_vel = imu_angular_velocity
 
 
         # Fill the observation vector
-        joints_pos_delta = joints_pos - self.default_joint_pos
+        joints_pos_delta = joints_pos_leg - self.default_joint_pos_leg
+        joints_pos_delta_FL = joints_pos_delta[0:3]
+        joints_pos_delta_FR = joints_pos_delta[3:6]
+        joints_pos_delta_RL = joints_pos_delta[6:9]
+        joints_pos_delta_RR = joints_pos_delta[9:12]
+
+        joints_vel_FL = joints_vel_leg[0:3]
+        joints_vel_FR = joints_vel_leg[3:6]
+        joints_vel_RL = joints_vel_leg[6:9]
+        joints_vel_RR = joints_vel_leg[9:12]
         obs = np.concatenate([
             imu_angular_velocity,
-            self._get_projected_gravity(imu_orientation),
-            [joints_pos_delta.FL[0]], [joints_pos_delta.FR[0]], [joints_pos_delta.RL[0]], [joints_pos_delta.RR[0]],
-            [joints_pos_delta.FL[1]], [joints_pos_delta.FR[1]], [joints_pos_delta.RL[1]], [joints_pos_delta.RR[1]],
-            [joints_pos_delta.FL[2]], [joints_pos_delta.FR[2]], [joints_pos_delta.RL[2]], [joints_pos_delta.RR[2]],
-            
-            [joints_vel.FL[0]], 
-            [joints_vel.FR[0]], 
-            [joints_vel.RL[0]], 
-            [joints_vel.RR[0]],
+            base_projected_gravity,
+            [joints_pos_delta_FL[0]], [joints_pos_delta_FR[0]], [joints_pos_delta_RL[0]], [joints_pos_delta_RR[0]],
+            [joints_pos_delta_FL[1]], [joints_pos_delta_FR[1]], [joints_pos_delta_RL[1]], [joints_pos_delta_RR[1]],
+            [joints_pos_delta_FL[2]], [joints_pos_delta_FR[2]], [joints_pos_delta_RL[2]], [joints_pos_delta_RR[2]],
 
-            [joints_vel.FL[1]], 
-            [joints_vel.FR[1]], 
-            [joints_vel.RL[1]], 
-            [joints_vel.RR[1]],
-            
-            [joints_vel.FL[2]], 
-            [joints_vel.FR[2]], 
-            [joints_vel.RL[2]], 
-            [joints_vel.RR[2]],
-            
+            [joints_vel_FL[0]],
+            [joints_vel_FR[0]],
+            [joints_vel_RL[0]],
+            [joints_vel_RR[0]],
+
+            [joints_vel_FL[1]],
+            [joints_vel_FR[1]],
+            [joints_vel_RL[1]],
+            [joints_vel_RR[1]],
+
+            [joints_vel_FL[2]],
+            [joints_vel_FR[2]],
+            [joints_vel_RL[2]],
+            [joints_vel_RR[2]],
+
             self.past_rl_actions.copy(),
         ])
 
@@ -175,18 +173,17 @@ class GetUpPolicyWrapper:
             self.past_rl_actions = rl_action_temp.copy()
 
 
-        self.rl_actions.FL = np.array([rl_action_temp[0], rl_action_temp[4], rl_action_temp[8]])
-        self.rl_actions.FR = np.array([rl_action_temp[1], rl_action_temp[5], rl_action_temp[9]])
-        self.rl_actions.RL = np.array([rl_action_temp[2], rl_action_temp[6], rl_action_temp[10]])
-        self.rl_actions.RR = np.array([rl_action_temp[3], rl_action_temp[7], rl_action_temp[11]])
+        rl_actions = np.array([
+            rl_action_temp[0], rl_action_temp[4], rl_action_temp[8],
+            rl_action_temp[1], rl_action_temp[5], rl_action_temp[9],
+            rl_action_temp[2], rl_action_temp[6], rl_action_temp[10],
+            rl_action_temp[3], rl_action_temp[7], rl_action_temp[11],
+        ])
 
 
         # Impedence Loop
-        self.desired_joint_pos.FL = self.default_joint_pos.FL + self.rl_actions.FL*self.action_scale
-        self.desired_joint_pos.FR = self.default_joint_pos.FR + self.rl_actions.FR*self.action_scale
-        self.desired_joint_pos.RL = self.default_joint_pos.RL + self.rl_actions.RL*self.action_scale
-        self.desired_joint_pos.RR = self.default_joint_pos.RR + self.rl_actions.RR*self.action_scale
+        self.desired_joint_pos = self.default_joint_pos_leg + rl_actions*self.action_scale
 
-        
+
         return self.desired_joint_pos
 
