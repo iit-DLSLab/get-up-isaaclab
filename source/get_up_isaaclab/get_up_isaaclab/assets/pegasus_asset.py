@@ -9,10 +9,11 @@ from isaaclab.assets.articulation import ArticulationCfg
 
 from get_up_isaaclab.assets import ISAAC_ASSET_DIR
 
-armature = [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02]
-viscous_friction = [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
-dynamic_friction = [0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2]
+armature = [0.3, 0.3, 0.6, 0.3, 0.3, 0.6, 0.3, 0.3, 0.6, 0.3, 0.3, 0.6]
+viscous_friction = [0.1, 0.5, 1.15, 0.1, 0.2, 1.15, 0.1, 0.5, 1.15, 0.1, 0.5, 1.15]
+dynamic_friction = [3.50, 2.11, 4.8, 2.50, 2.11, 4.8, 3.50, 2.11, 4.8, 3.50, 2.11, 4.8]
 bias = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+delay = 2
 
 
 PEGASUS_HIP_ACTUATOR_CFG = PaceDCMotorCfg(
@@ -29,7 +30,7 @@ PEGASUS_HIP_ACTUATOR_CFG = PaceDCMotorCfg(
     dynamic_friction={"FL_hip_joint": dynamic_friction[0], "FR_hip_joint": dynamic_friction[3], "RL_hip_joint": dynamic_friction[6], "RR_hip_joint": dynamic_friction[9]},  # dynamic friction coefficient (Nm)
     viscous_friction={"FL_hip_joint": viscous_friction[0], "FR_hip_joint": viscous_friction[3], "RL_hip_joint": viscous_friction[6], "RR_hip_joint": viscous_friction[9]},  # viscous friction coefficient (Nm s/rad)
     armature={"FL_hip_joint": armature[0], "FR_hip_joint": armature[3], "RL_hip_joint": armature[6], "RR_hip_joint": armature[9]},
-    max_delay=1,  # max delay in simulation steps
+    max_delay=delay,  # max delay in simulation steps
 )
 
 
@@ -47,7 +48,7 @@ PEGASUS_THIGH_ACTUATOR_CFG = PaceDCMotorCfg(
     dynamic_friction={"FL_thigh_joint": dynamic_friction[1], "FR_thigh_joint": dynamic_friction[4], "RL_thigh_joint": dynamic_friction[7], "RR_thigh_joint": dynamic_friction[10]},  # dynamic friction coefficient (Nm)
     viscous_friction={"FL_thigh_joint": viscous_friction[1], "FR_thigh_joint": viscous_friction[4], "RL_thigh_joint": viscous_friction[7], "RR_thigh_joint": viscous_friction[10]},  # viscous friction coefficient (Nm s/rad)
     armature={"FL_thigh_joint":armature[1], "FR_thigh_joint": armature[4], "RL_thigh_joint": armature[7], "RR_thigh_joint": armature[10]},
-    max_delay=1,  # max delay in simulation steps
+    max_delay=delay,  # max delay in simulation steps
 )
 
 
@@ -65,7 +66,7 @@ PEGASUS_CALF_ACTUATOR_CFG = PaceDCMotorCfg(
     dynamic_friction={"FL_calf_joint": dynamic_friction[2], "FR_calf_joint": dynamic_friction[5], "RL_calf_joint": dynamic_friction[8], "RR_calf_joint": dynamic_friction[11]},  # dynamic friction coefficient (Nm)
     viscous_friction={"FL_calf_joint": viscous_friction[2], "FR_calf_joint": viscous_friction[5], "RL_calf_joint": viscous_friction[8], "RR_calf_joint": viscous_friction[11]},  # viscous friction coefficient (Nm s/rad)
     armature={"FL_calf_joint": armature[2], "FR_calf_joint": armature[5], "RL_calf_joint": armature[8], "RR_calf_joint": armature[11]},
-    max_delay=1,  # max delay in simulation steps
+    max_delay=delay,  # max delay in simulation steps
 )
 
 PEGASUS_CFG = ArticulationCfg(
