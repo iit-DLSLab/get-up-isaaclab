@@ -28,7 +28,7 @@ A list of robots and environments available is described below:
 
 | Robot Model         | Environment Name Pattern                                   |
 |---------------------|------------------------------------------------------------|
-| [Go2](https://github.com/iit-DLSLab/gym-quadruped/tree/master/gym_quadruped/robot_model/go2)| GetUp-**RobotModel**-Flat-Blind <br> GetUp-**RobotModel**-Rough-Blind <br>|
+| [Go2](./robot_model/go2/), [Pegasus](./robot_model/pegasus/) | GetUp-**RobotModel**-Flat-Blind <br> GetUp-**RobotModel**-Rough-Blind <br>|
 
 
 ## Installation and Runs

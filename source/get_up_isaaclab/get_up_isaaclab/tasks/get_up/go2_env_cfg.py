@@ -196,6 +196,7 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
         pattern_cfg=patterns.GridPatternCfg(resolution=0.2, size=[0.6, 0.6]),
         debug_vis=False,
         mesh_prim_paths=["/World/ground"],
+        global_world_only=True,
     )
 
     # an imu sensor in case we don't want any state estimator (for now we can't use sites from the xml)
@@ -236,6 +237,7 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
             restitution=0.0,
         ),
         physics=PhysicsCfg(),
+        use_newton_actuators=False,
     )
     terrain = TerrainImporterCfg(
         prim_path="/World/ground",
