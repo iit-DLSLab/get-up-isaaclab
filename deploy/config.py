@@ -4,7 +4,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(dir_path+"/../")
 sys.path.append(dir_path+"/../scripts/rsl_rl")
 
-robot = 'pegasus'  # 'go2'' 
+robot = 'go2'  # 'go2' 
 scene = 'scene_random_boxes'  # scene_flat, scene_random_boxes
 
 # ----------------------------------------------------------------------------------------------------------------
