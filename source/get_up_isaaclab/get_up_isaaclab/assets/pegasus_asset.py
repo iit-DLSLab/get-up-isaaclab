@@ -20,8 +20,8 @@ PEGASUS_HIP_ACTUATOR_CFG = PaceDCMotorCfg(
     saturation_effort=120.0,
     effort_limit=120.0,
     velocity_limit=10.47,
-    stiffness={".*": 200.0},  # P gain in Nm/rad
-    damping={".*": 10.0},  # D gain in Nm s/rad
+    stiffness={".*": 120.0},  # P gain in Nm/rad
+    damping={".*": 6.0},  # D gain in Nm s/rad
     encoder_bias={"FL_hip_joint": bias[0], "FR_hip_joint": bias[3], "RL_hip_joint": bias[6], "RR_hip_joint": bias[9]},  # encoder bias in radians
     # note: modeling coulomb friction if friction = dynamic_friction
     # > in newer Isaac Sim versions, friction is renamed to static_friction
@@ -38,8 +38,8 @@ PEGASUS_THIGH_ACTUATOR_CFG = PaceDCMotorCfg(
     saturation_effort=120.0,
     effort_limit=120.0,
     velocity_limit=10.47,
-    stiffness={".*": 200.0},  # P gain in Nm/rad
-    damping={".*": 10.0},  # D gain in Nm s/rad
+    stiffness={".*": 120.0},  # P gain in Nm/rad
+    damping={".*": 6.0},  # D gain in Nm s/rad
     encoder_bias={"FL_thigh_joint": bias[1], "FR_thigh_joint": bias[4], "RL_thigh_joint": bias[7], "RR_thigh_joint": bias[10]},  # encoder bias in radians
     # note: modeling coulomb friction if friction = dynamic_friction
     # > in newer Isaac Sim versions, friction is renamed to static_friction
@@ -56,8 +56,8 @@ PEGASUS_CALF_ACTUATOR_CFG = PaceDCMotorCfg(
     saturation_effort=210.0,
     effort_limit=210.0,
     velocity_limit=5.18,
-    stiffness={".*": 200.0},  # P gain in Nm/rad
-    damping={".*": 10.0},  # D gain in Nm s/rad
+    stiffness={".*": 120.0},  # P gain in Nm/rad
+    damping={".*": 6.0},  # D gain in Nm s/rad
     encoder_bias={"FL_calf_joint": bias[2], "FR_calf_joint": bias[5], "RL_calf_joint": bias[8], "RR_calf_joint": bias[11]},  # encoder bias in radians
     # note: modeling coulomb friction if friction = dynamic_friction
     # > in newer Isaac Sim versions, friction is renamed to static_friction
