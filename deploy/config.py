@@ -5,7 +5,7 @@ sys.path.append(dir_path+"/../")
 sys.path.append(dir_path+"/../scripts/rsl_rl")
 
 robot = 'pegasus'  # 'go2'' 
-scene = 'random_boxes'  # flat, random_boxes, random_pyramids, perlin
+scene = 'scene_random_boxes'  # scene_flat, scene_random_boxes
 
 # ----------------------------------------------------------------------------------------------------------------
 if(robot == "go2"):

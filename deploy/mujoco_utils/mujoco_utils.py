@@ -1,5 +1,7 @@
 import numpy as np
 from scipy.spatial.transform import Rotation
+from mujoco.viewer import Handle
+import mujoco
 
 def base_configuration(mjData):
     """Robot base configuration (homogenous transformation matrix) in world reference frame."""
@@ -21,7 +23,7 @@ def base_lin_vel(mjData, frame='world'):
         return R.T @ mjData.qvel[0:3]
     else:
         raise ValueError(f"Invalid frame: {frame} != 'world' or 'base'")
-
+    
 
 def base_ang_vel(mjData, frame='world'):
     """Returns the base angular velocity (3,) in the specified frame."""
@@ -68,3 +70,45 @@ def target_base_vel(mjData, ref_base_lin_vel_H, ref_base_ang_yaw_dot, frame='wor
     elif frame == 'base':
         R = base_configuration(mjData)[0:3, 0:3]
         return R.T @ ref_base_lin_vel, R.T @ ref_base_ang_vel
+    
+
+def render_sphere(viewer: Handle, position: np.ndarray, diameter: float, color: np.ndarray, geom_id: int = -1) -> int:
+    """Function to render a sphere in the Mujoco viewer.
+
+    Args:
+        viewer (Handle): The Mujoco viewer.
+        position (np.ndarray): The position of the sphere.
+        diameter (float): The diameter of the sphere.
+        color (np.ndarray): The color of the sphere.
+        geom_id (int, optional): The id of the geometry. Defaults to -1.
+
+    Returns:
+        int: The id of the geometry.
+    """
+    if viewer is None:
+        return -1
+
+    if geom_id < 0 or geom_id is None:
+        # Instantiate a new geometry
+        geom = mujoco.MjvGeom()
+        geom.type = mujoco.mjtGeom.mjGEOM_SPHERE
+        viewer.user_scn.ngeom += 1
+        geom_id = viewer.user_scn.ngeom - 1
+
+    geom = viewer.user_scn.geoms[geom_id]
+
+    # Initialize the geometry
+    mujoco.mjv_initGeom(
+        geom,
+        type=mujoco.mjtGeom.mjGEOM_SPHERE,
+        size=np.asarray([diameter / 2] * 3),  # Radius is half the diameter
+        mat=np.eye(3).flatten(),
+        pos=position,
+        rgba=color,
+    )
+
+    geom.category = mujoco.mjtCatBit.mjCAT_DECOR
+    geom.segid = -1
+    geom.objid = -1
+
+    return geom_id

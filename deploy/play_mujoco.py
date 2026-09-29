@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
 
     # Create the mujoco model ---------------------------------------------------------------------
-    mjModel = mujoco.MjModel.from_xml_path(dir_path + "/mujoco_utils/robot_model/" + robot_name + "/" + scene_name + ".xml")
+    mjModel = mujoco.MjModel.from_xml_path(dir_path + "/../robot_model/" + robot_name + "/" + scene_name + ".xml")
     mjModel.opt.timestep = simulation_dt
     mjData = mujoco.MjData(mjModel)
     keyframe_id = mujoco.mj_name2id(mjModel, mujoco.mjtObj.mjOBJ_KEY, "home")
