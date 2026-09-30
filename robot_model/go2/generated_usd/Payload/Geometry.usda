@@ -4,111 +4,115 @@
         string creator = "MuJoCo USD Converter v0.2.0"
     }
     defaultPrim = "go2_description"
-    doc = """Generated from Composed Stage of root layer /tmp/tmpmqmq1jez/go2_description.usdc
-
-
-Generated from Composed Stage of root layer /tmp/mjcf_import_go2_nhk9jaht/usdex_go2/go2_description.usdc
-
-
-Generated from Composed Stage of root layer /tmp/mjcf_import_go2_nhk9jaht/temp_go2/go2.usd
-
-
-Generated from Composed Stage of root layer /home/gturrisi-iit.local/other_ws_home/sim2real-robot-identification/robot_model/go2/go2/payloads/base.usd
-"""
     kilogramsPerUnit = 1
     metersPerUnit = 1
-    subLayers = [
-        @./robot.usda@
-    ]
     upAxis = "Z"
 )
 
-def Xform "go2_description" (
-    prepend apiSchemas = ["GeomModelAPI", "IsaacRobotAPI"]
-    assetInfo = {
-        string name = "go2_description"
-    }
-    kind = "component"
-)
+def Xform "go2_description"
 {
-    float3[] extentsHint = [(-0.24186657, -0.162013, -0.0039150002), (0.331958, 0.162013, 0.533834), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (-0.2394, -0.164, -0.0029999998), (0.34, 0.164, 0.523)]
-    custom rel isaac:physics:robotJoints
-    custom rel isaac:physics:robotLinks
-    custom token isaac:robotType = "Default"
-
     def Scope "Geometry"
     {
-        def Xform "base" (
-            prepend apiSchemas = ["IsaacLinkAPI"]
-        )
+        def Xform "base"
         {
             quatf xformOp:orient = (1, 0, 0, 0)
             float3 xformOp:scale = (1, 1, 1)
             double3 xformOp:translate = (0, 0, 0.445)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-            def Xform "base_0" (
-                instanceable = true
-                prepend references = @./instances.usda@</Instances/base_0>
+            def Mesh "base_0" (
+                prepend references = @./GeometryLibrary.usdc@</Geometry/base_0>
             )
             {
-                quatd xformOp:orient = (1, 0, 0, 0)
-                double3 xformOp:scale = (1, 1, 1)
+                color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayColor:indices = None
+                float[] primvars:displayOpacity = [1] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayOpacity:indices = None
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
             }
 
-            def Xform "base_1" (
-                instanceable = true
-                prepend references = @./instances.usda@</Instances/base_1>
+            def Mesh "base_1" (
+                prepend references = @./GeometryLibrary.usdc@</Geometry/base_1>
             )
             {
-                quatd xformOp:orient = (1, 0, 0, 0)
-                double3 xformOp:scale = (1, 1, 1)
+                color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayColor:indices = None
+                float[] primvars:displayOpacity = [1] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayOpacity:indices = None
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
             }
 
-            def Xform "base_2" (
-                instanceable = true
-                prepend references = @./instances.usda@</Instances/base_2>
+            def Mesh "base_2" (
+                prepend references = @./GeometryLibrary.usdc@</Geometry/base_2>
             )
             {
-                quatd xformOp:orient = (1, 0, 0, 0)
-                double3 xformOp:scale = (1, 1, 1)
+                color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayColor:indices = None
+                float[] primvars:displayOpacity = [1] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayOpacity:indices = None
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
             }
 
-            def Xform "base_3" (
-                instanceable = true
-                prepend references = @./instances.usda@</Instances/base_3>
+            def Mesh "base_3" (
+                prepend references = @./GeometryLibrary.usdc@</Geometry/base_3>
             )
             {
-                quatd xformOp:orient = (1, 0, 0, 0)
-                double3 xformOp:scale = (1, 1, 1)
+                color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayColor:indices = None
+                float[] primvars:displayOpacity = [1] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayOpacity:indices = None
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
             }
 
-            def Xform "base_4" (
-                instanceable = true
-                prepend references = @./instances.usda@</Instances/base_4>
+            def Mesh "base_4" (
+                prepend references = @./GeometryLibrary.usdc@</Geometry/base_4>
             )
             {
-                quatd xformOp:orient = (1, 0, 0, 0)
-                double3 xformOp:scale = (1, 1, 1)
+                color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayColor:indices = None
+                float[] primvars:displayOpacity = [1] (
+                    interpolation = "constant"
+                )
+                int[] primvars:displayOpacity:indices = None
+                quatf xformOp:orient = (1, 0, 0, 0)
+                float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (0, 0, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
             }
 
-            def Cube "Box" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-            )
+            def Cube "Box"
             {
                 float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                rel material:binding = </go2_description/Materials/gray>
-                rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -125,12 +129,10 @@ def Xform "go2_description" (
             }
 
             def Cube "Box_1" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                 displayName = "Box"
             )
             {
                 float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -148,12 +150,10 @@ def Xform "go2_description" (
             }
 
             def Cube "Box_2" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                 displayName = "Box"
             )
             {
                 float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -171,12 +171,10 @@ def Xform "go2_description" (
             }
 
             def Cube "Box_3" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                 displayName = "Box"
             )
             {
                 float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -193,14 +191,11 @@ def Xform "go2_description" (
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
             }
 
-            def Capsule "Capsule" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-            )
+            def Capsule "Capsule"
             {
                 uniform token axis = "Z"
                 float3[] extent = [(-0.045, -0.045, -0.125), (0.045, 0.045, 0.125)]
                 double height = 0.16
-                rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -218,14 +213,12 @@ def Xform "go2_description" (
             }
 
             def Capsule "Capsule_1" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                 displayName = "Capsule"
             )
             {
                 uniform token axis = "Z"
                 float3[] extent = [(-0.045, -0.045, -0.125), (0.045, 0.045, 0.125)]
                 double height = 0.16
-                rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -243,14 +236,12 @@ def Xform "go2_description" (
             }
 
             def Capsule "Capsule_2" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                 displayName = "Capsule"
             )
             {
                 uniform token axis = "Z"
                 float3[] extent = [(-0.05, -0.05, -0.068), (0.05, 0.05, 0.068)]
                 double height = 0.036
-                rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -267,12 +258,9 @@ def Xform "go2_description" (
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
             }
 
-            def Sphere "Sphere" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-            )
+            def Sphere "Sphere"
             {
                 float3[] extent = [(-0.047, -0.047, -0.047), (0.047, 0.047, 0.047)]
-                rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -308,45 +296,54 @@ def Xform "go2_description" (
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
             }
 
-            def Xform "FL_hip" (
-                prepend apiSchemas = ["IsaacLinkAPI"]
-            )
+            def Xform "FL_hip"
             {
                 quatf xformOp:orient = (1, 0, 0, 0)
                 float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (0.1934, 0.0465, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                def Xform "hip_0" (
-                    instanceable = true
-                    prepend references = @./instances.usda@</Instances/hip_0>
+                def Mesh "hip_0" (
+                    prepend references = @./GeometryLibrary.usdc@</Geometry/hip_0>
                 )
                 {
-                    quatd xformOp:orient = (1, 0, 0, 0)
-                    double3 xformOp:scale = (1, 1, 1)
+                    color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayColor:indices = None
+                    float[] primvars:displayOpacity = [1] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayOpacity:indices = None
+                    quatf xformOp:orient = (1, 0, 0, 0)
+                    float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, 0, 0)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Xform "hip_1" (
-                    instanceable = true
-                    prepend references = @./instances.usda@</Instances/hip_1>
+                def Mesh "hip_1" (
+                    prepend references = @./GeometryLibrary.usdc@</Geometry/hip_1>
                 )
                 {
-                    quatd xformOp:orient = (1, 0, 0, 0)
-                    double3 xformOp:scale = (1, 1, 1)
+                    color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayColor:indices = None
+                    float[] primvars:displayOpacity = [1] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayOpacity:indices = None
+                    quatf xformOp:orient = (1, 0, 0, 0)
+                    float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, 0, 0)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Capsule "Capsule" (
-                    prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                )
+                def Capsule "Capsule"
                 {
                     uniform token axis = "Z"
                     float3[] extent = [(-0.046, -0.046, -0.066), (0.046, 0.046, 0.066)]
                     double height = 0.04
-                    rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                     color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                         interpolation = "constant"
                     )
@@ -363,43 +360,52 @@ def Xform "go2_description" (
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Xform "FL_thigh" (
-                    prepend apiSchemas = ["IsaacLinkAPI"]
-                )
+                def Xform "FL_thigh"
                 {
                     quatf xformOp:orient = (1, 0, 0, 0)
                     float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, 0.0955, 0)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                    def Xform "thigh_0" (
-                        instanceable = true
-                        prepend references = @./instances.usda@</Instances/thigh_0>
+                    def Mesh "thigh_0" (
+                        prepend references = @./GeometryLibrary.usdc@</Geometry/thigh_0>
                     )
                     {
-                        quatd xformOp:orient = (1, 0, 0, 0)
-                        double3 xformOp:scale = (1, 1, 1)
+                        color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayColor:indices = None
+                        float[] primvars:displayOpacity = [1] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayOpacity:indices = None
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0, 0, 0)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Xform "thigh_1" (
-                        instanceable = true
-                        prepend references = @./instances.usda@</Instances/thigh_1>
+                    def Mesh "thigh_1" (
+                        prepend references = @./GeometryLibrary.usdc@</Geometry/thigh_1>
                     )
                     {
-                        quatd xformOp:orient = (1, 0, 0, 0)
-                        double3 xformOp:scale = (1, 1, 1)
+                        color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayColor:indices = None
+                        float[] primvars:displayOpacity = [1] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayOpacity:indices = None
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0, 0, 0)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Cube "Box" (
-                        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                    )
+                    def Cube "Box"
                     {
                         float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                        rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                         color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                             interpolation = "constant"
                         )
@@ -416,43 +422,52 @@ def Xform "go2_description" (
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Xform "FL_calf" (
-                        prepend apiSchemas = ["IsaacLinkAPI"]
-                    )
+                    def Xform "FL_calf"
                     {
                         quatf xformOp:orient = (1, 0, 0, 0)
                         float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0, 0, -0.213)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                        def Xform "calf_0" (
-                            instanceable = true
-                            prepend references = @./instances.usda@</Instances/calf_0>
+                        def Mesh "calf_0" (
+                            prepend references = @./GeometryLibrary.usdc@</Geometry/calf_0>
                         )
                         {
-                            quatd xformOp:orient = (1, 0, 0, 0)
-                            double3 xformOp:scale = (1, 1, 1)
+                            color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayColor:indices = None
+                            float[] primvars:displayOpacity = [1] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayOpacity:indices = None
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "calf_1" (
-                            instanceable = true
-                            prepend references = @./instances.usda@</Instances/calf_1>
+                        def Mesh "calf_1" (
+                            prepend references = @./GeometryLibrary.usdc@</Geometry/calf_1>
                         )
                         {
-                            quatd xformOp:orient = (1, 0, 0, 0)
-                            double3 xformOp:scale = (1, 1, 1)
+                            color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayColor:indices = None
+                            float[] primvars:displayOpacity = [1] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayOpacity:indices = None
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Cube "Box" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                        )
+                        def Cube "Box"
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                 interpolation = "constant"
                             )
@@ -470,12 +485,10 @@ def Xform "go2_description" (
                         }
 
                         def Cube "Box_1" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                             displayName = "Box"
                         )
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                 interpolation = "constant"
                             )
@@ -493,12 +506,10 @@ def Xform "go2_description" (
                         }
 
                         def Cube "Box_2" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                             displayName = "Box"
                         )
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                 interpolation = "constant"
                             )
@@ -515,32 +526,34 @@ def Xform "go2_description" (
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "foot" (
-                            instanceable = true
-                            prepend references = @./instances.usda@</Instances/foot>
+                        def Mesh "foot" (
+                            prepend references = @./GeometryLibrary.usdc@</Geometry/foot>
                         )
                         {
-                            quatd xformOp:orient = (1, 0, 0, 0)
-                            double3 xformOp:scale = (1, 1, 1)
+                            color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayColor:indices = None
+                            float[] primvars:displayOpacity = [1] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayOpacity:indices = None
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0, 0, -0.213)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "FL_foot" (
-                            prepend apiSchemas = ["IsaacLinkAPI"]
-                        )
+                        def Xform "FL_foot"
                         {
                             quatf xformOp:orient = (1, 0, 0, 0)
                             float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (-0.002, 0, -0.213)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                            def Sphere "FL" (
-                                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                            )
+                            def Sphere "FL"
                             {
                                 float3[] extent = [(-0.022, -0.022, -0.022), (0.022, 0.022, 0.022)]
-                                rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                     interpolation = "constant"
                                 )
@@ -561,45 +574,54 @@ def Xform "go2_description" (
                 }
             }
 
-            def Xform "FR_hip" (
-                prepend apiSchemas = ["IsaacLinkAPI"]
-            )
+            def Xform "FR_hip"
             {
                 quatf xformOp:orient = (1, 0, 0, 0)
                 float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (0.1934, -0.0465, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                def Xform "hip_0" (
-                    instanceable = true
-                    prepend references = @./instances.usda@</Instances/hip_0>
+                def Mesh "hip_0" (
+                    prepend references = @./GeometryLibrary.usdc@</Geometry/hip_0>
                 )
                 {
-                    quatd xformOp:orient = (0.00004632680066, 1, 0, 0)
-                    double3 xformOp:scale = (1, 1, 1)
+                    color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayColor:indices = None
+                    float[] primvars:displayOpacity = [1] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayOpacity:indices = None
+                    quatf xformOp:orient = (0.0000463268, 1, 0, 0)
+                    float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, 0, 0)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Xform "hip_1" (
-                    instanceable = true
-                    prepend references = @./instances.usda@</Instances/hip_1>
+                def Mesh "hip_1" (
+                    prepend references = @./GeometryLibrary.usdc@</Geometry/hip_1>
                 )
                 {
-                    quatd xformOp:orient = (0.00004632680066, 1, 0, 0)
-                    double3 xformOp:scale = (1, 1, 1)
+                    color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayColor:indices = None
+                    float[] primvars:displayOpacity = [1] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayOpacity:indices = None
+                    quatf xformOp:orient = (0.0000463268, 1, 0, 0)
+                    float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, 0, 0)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Capsule "Capsule" (
-                    prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                )
+                def Capsule "Capsule"
                 {
                     uniform token axis = "Z"
                     float3[] extent = [(-0.046, -0.046, -0.066), (0.046, 0.046, 0.066)]
                     double height = 0.04
-                    rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                     color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                         interpolation = "constant"
                     )
@@ -616,43 +638,52 @@ def Xform "go2_description" (
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Xform "FR_thigh" (
-                    prepend apiSchemas = ["IsaacLinkAPI"]
-                )
+                def Xform "FR_thigh"
                 {
                     quatf xformOp:orient = (1, 0, 0, 0)
                     float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, -0.0955, 0)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                    def Xform "thigh_mirror_0" (
-                        instanceable = true
-                        prepend references = @./instances.usda@</Instances/thigh_mirror_0>
+                    def Mesh "thigh_mirror_0" (
+                        prepend references = @./GeometryLibrary.usdc@</Geometry/thigh_mirror_0>
                     )
                     {
-                        quatd xformOp:orient = (1, 0, 0, 0)
-                        double3 xformOp:scale = (1, 1, 1)
+                        color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayColor:indices = None
+                        float[] primvars:displayOpacity = [1] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayOpacity:indices = None
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0, 0, 0)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Xform "thigh_mirror_1" (
-                        instanceable = true
-                        prepend references = @./instances.usda@</Instances/thigh_mirror_1>
+                    def Mesh "thigh_mirror_1" (
+                        prepend references = @./GeometryLibrary.usdc@</Geometry/thigh_mirror_1>
                     )
                     {
-                        quatd xformOp:orient = (1, 0, 0, 0)
-                        double3 xformOp:scale = (1, 1, 1)
+                        color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayColor:indices = None
+                        float[] primvars:displayOpacity = [1] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayOpacity:indices = None
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0, 0, 0)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Cube "Box" (
-                        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                    )
+                    def Cube "Box"
                     {
                         float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                        rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                         color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                             interpolation = "constant"
                         )
@@ -669,43 +700,52 @@ def Xform "go2_description" (
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Xform "FR_calf" (
-                        prepend apiSchemas = ["IsaacLinkAPI"]
-                    )
+                    def Xform "FR_calf"
                     {
                         quatf xformOp:orient = (1, 0, 0, 0)
                         float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0, 0, -0.213)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                        def Xform "calf_mirror_0" (
-                            instanceable = true
-                            prepend references = @./instances.usda@</Instances/calf_mirror_0>
+                        def Mesh "calf_mirror_0" (
+                            prepend references = @./GeometryLibrary.usdc@</Geometry/calf_mirror_0>
                         )
                         {
-                            quatd xformOp:orient = (1, 0, 0, 0)
-                            double3 xformOp:scale = (1, 1, 1)
+                            color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayColor:indices = None
+                            float[] primvars:displayOpacity = [1] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayOpacity:indices = None
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "calf_mirror_1" (
-                            instanceable = true
-                            prepend references = @./instances.usda@</Instances/calf_mirror_1>
+                        def Mesh "calf_mirror_1" (
+                            prepend references = @./GeometryLibrary.usdc@</Geometry/calf_mirror_1>
                         )
                         {
-                            quatd xformOp:orient = (1, 0, 0, 0)
-                            double3 xformOp:scale = (1, 1, 1)
+                            color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayColor:indices = None
+                            float[] primvars:displayOpacity = [1] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayOpacity:indices = None
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Cube "Box" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                        )
+                        def Cube "Box"
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                 interpolation = "constant"
                             )
@@ -723,12 +763,10 @@ def Xform "go2_description" (
                         }
 
                         def Cube "Box_1" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                             displayName = "Box"
                         )
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                 interpolation = "constant"
                             )
@@ -746,12 +784,10 @@ def Xform "go2_description" (
                         }
 
                         def Cube "Box_2" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                             displayName = "Box"
                         )
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                 interpolation = "constant"
                             )
@@ -768,32 +804,34 @@ def Xform "go2_description" (
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "foot" (
-                            instanceable = true
-                            prepend references = @./instances.usda@</Instances/foot>
+                        def Mesh "foot" (
+                            prepend references = @./GeometryLibrary.usdc@</Geometry/foot>
                         )
                         {
-                            quatd xformOp:orient = (1, 0, 0, 0)
-                            double3 xformOp:scale = (1, 1, 1)
+                            color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayColor:indices = None
+                            float[] primvars:displayOpacity = [1] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayOpacity:indices = None
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0, 0, -0.213)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "FR_foot" (
-                            prepend apiSchemas = ["IsaacLinkAPI"]
-                        )
+                        def Xform "FR_foot"
                         {
                             quatf xformOp:orient = (1, 0, 0, 0)
                             float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (-0.002, 0, -0.213)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                            def Sphere "FR" (
-                                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                            )
+                            def Sphere "FR"
                             {
                                 float3[] extent = [(-0.022, -0.022, -0.022), (0.022, 0.022, 0.022)]
-                                rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                     interpolation = "constant"
                                 )
@@ -814,45 +852,54 @@ def Xform "go2_description" (
                 }
             }
 
-            def Xform "RL_hip" (
-                prepend apiSchemas = ["IsaacLinkAPI"]
-            )
+            def Xform "RL_hip"
             {
                 quatf xformOp:orient = (1, 0, 0, 0)
                 float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (-0.1934, 0.0465, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                def Xform "hip_0" (
-                    instanceable = true
-                    prepend references = @./instances.usda@</Instances/hip_0>
+                def Mesh "hip_0" (
+                    prepend references = @./GeometryLibrary.usdc@</Geometry/hip_0>
                 )
                 {
-                    quatd xformOp:orient = (0.00004632680066, 0, 1, 0)
-                    double3 xformOp:scale = (1, 1, 1)
+                    color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayColor:indices = None
+                    float[] primvars:displayOpacity = [1] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayOpacity:indices = None
+                    quatf xformOp:orient = (0.0000463268, 0, 1, 0)
+                    float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, 0, 0)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Xform "hip_1" (
-                    instanceable = true
-                    prepend references = @./instances.usda@</Instances/hip_1>
+                def Mesh "hip_1" (
+                    prepend references = @./GeometryLibrary.usdc@</Geometry/hip_1>
                 )
                 {
-                    quatd xformOp:orient = (0.00004632680066, 0, 1, 0)
-                    double3 xformOp:scale = (1, 1, 1)
+                    color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayColor:indices = None
+                    float[] primvars:displayOpacity = [1] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayOpacity:indices = None
+                    quatf xformOp:orient = (0.0000463268, 0, 1, 0)
+                    float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, 0, 0)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Capsule "Capsule" (
-                    prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                )
+                def Capsule "Capsule"
                 {
                     uniform token axis = "Z"
                     float3[] extent = [(-0.046, -0.046, -0.066), (0.046, 0.046, 0.066)]
                     double height = 0.04
-                    rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                     color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                         interpolation = "constant"
                     )
@@ -869,43 +916,52 @@ def Xform "go2_description" (
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Xform "RL_thigh" (
-                    prepend apiSchemas = ["IsaacLinkAPI"]
-                )
+                def Xform "RL_thigh"
                 {
                     quatf xformOp:orient = (1, 0, 0, 0)
                     float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, 0.0955, 0)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                    def Xform "thigh_0" (
-                        instanceable = true
-                        prepend references = @./instances.usda@</Instances/thigh_0>
+                    def Mesh "thigh_0" (
+                        prepend references = @./GeometryLibrary.usdc@</Geometry/thigh_0>
                     )
                     {
-                        quatd xformOp:orient = (1, 0, 0, 0)
-                        double3 xformOp:scale = (1, 1, 1)
+                        color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayColor:indices = None
+                        float[] primvars:displayOpacity = [1] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayOpacity:indices = None
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0, 0, 0)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Xform "thigh_1" (
-                        instanceable = true
-                        prepend references = @./instances.usda@</Instances/thigh_1>
+                    def Mesh "thigh_1" (
+                        prepend references = @./GeometryLibrary.usdc@</Geometry/thigh_1>
                     )
                     {
-                        quatd xformOp:orient = (1, 0, 0, 0)
-                        double3 xformOp:scale = (1, 1, 1)
+                        color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayColor:indices = None
+                        float[] primvars:displayOpacity = [1] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayOpacity:indices = None
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0, 0, 0)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Cube "Box" (
-                        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                    )
+                    def Cube "Box"
                     {
                         float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                        rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                         color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                             interpolation = "constant"
                         )
@@ -922,43 +978,52 @@ def Xform "go2_description" (
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Xform "RL_calf" (
-                        prepend apiSchemas = ["IsaacLinkAPI"]
-                    )
+                    def Xform "RL_calf"
                     {
                         quatf xformOp:orient = (1, 0, 0, 0)
                         float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0, 0, -0.213)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                        def Xform "calf_0" (
-                            instanceable = true
-                            prepend references = @./instances.usda@</Instances/calf_0>
+                        def Mesh "calf_0" (
+                            prepend references = @./GeometryLibrary.usdc@</Geometry/calf_0>
                         )
                         {
-                            quatd xformOp:orient = (1, 0, 0, 0)
-                            double3 xformOp:scale = (1, 1, 1)
+                            color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayColor:indices = None
+                            float[] primvars:displayOpacity = [1] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayOpacity:indices = None
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "calf_1" (
-                            instanceable = true
-                            prepend references = @./instances.usda@</Instances/calf_1>
+                        def Mesh "calf_1" (
+                            prepend references = @./GeometryLibrary.usdc@</Geometry/calf_1>
                         )
                         {
-                            quatd xformOp:orient = (1, 0, 0, 0)
-                            double3 xformOp:scale = (1, 1, 1)
+                            color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayColor:indices = None
+                            float[] primvars:displayOpacity = [1] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayOpacity:indices = None
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Cube "Box" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                        )
+                        def Cube "Box"
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                 interpolation = "constant"
                             )
@@ -976,12 +1041,10 @@ def Xform "go2_description" (
                         }
 
                         def Cube "Box_1" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                             displayName = "Box"
                         )
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                 interpolation = "constant"
                             )
@@ -999,12 +1062,10 @@ def Xform "go2_description" (
                         }
 
                         def Cube "Box_2" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                             displayName = "Box"
                         )
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                 interpolation = "constant"
                             )
@@ -1021,32 +1082,34 @@ def Xform "go2_description" (
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "foot" (
-                            instanceable = true
-                            prepend references = @./instances.usda@</Instances/foot>
+                        def Mesh "foot" (
+                            prepend references = @./GeometryLibrary.usdc@</Geometry/foot>
                         )
                         {
-                            quatd xformOp:orient = (1, 0, 0, 0)
-                            double3 xformOp:scale = (1, 1, 1)
+                            color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayColor:indices = None
+                            float[] primvars:displayOpacity = [1] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayOpacity:indices = None
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0, 0, -0.213)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "RL_foot" (
-                            prepend apiSchemas = ["IsaacLinkAPI"]
-                        )
+                        def Xform "RL_foot"
                         {
                             quatf xformOp:orient = (1, 0, 0, 0)
                             float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (-0.002, 0, -0.213)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                            def Sphere "RL" (
-                                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                            )
+                            def Sphere "RL"
                             {
                                 float3[] extent = [(-0.022, -0.022, -0.022), (0.022, 0.022, 0.022)]
-                                rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                     interpolation = "constant"
                                 )
@@ -1067,45 +1130,54 @@ def Xform "go2_description" (
                 }
             }
 
-            def Xform "RR_hip" (
-                prepend apiSchemas = ["IsaacLinkAPI"]
-            )
+            def Xform "RR_hip"
             {
                 quatf xformOp:orient = (1, 0, 0, 0)
                 float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (-0.1934, -0.0465, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                def Xform "hip_0" (
-                    instanceable = true
-                    prepend references = @./instances.usda@</Instances/hip_0>
+                def Mesh "hip_0" (
+                    prepend references = @./GeometryLibrary.usdc@</Geometry/hip_0>
                 )
                 {
-                    quatd xformOp:orient = (0, 0.00004632680066, 0.00004632680066, -1)
-                    double3 xformOp:scale = (1, 1, 1)
+                    color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayColor:indices = None
+                    float[] primvars:displayOpacity = [1] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayOpacity:indices = None
+                    quatf xformOp:orient = (-2.1461701e-9, -0.0000463268, -0.0000463268, 1)
+                    float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, 0, 0)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Xform "hip_1" (
-                    instanceable = true
-                    prepend references = @./instances.usda@</Instances/hip_1>
+                def Mesh "hip_1" (
+                    prepend references = @./GeometryLibrary.usdc@</Geometry/hip_1>
                 )
                 {
-                    quatd xformOp:orient = (0, 0.00004632680066, 0.00004632680066, -1)
-                    double3 xformOp:scale = (1, 1, 1)
+                    color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayColor:indices = None
+                    float[] primvars:displayOpacity = [1] (
+                        interpolation = "constant"
+                    )
+                    int[] primvars:displayOpacity:indices = None
+                    quatf xformOp:orient = (-2.1461701e-9, -0.0000463268, -0.0000463268, 1)
+                    float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, 0, 0)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Capsule "Capsule" (
-                    prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                )
+                def Capsule "Capsule"
                 {
                     uniform token axis = "Z"
                     float3[] extent = [(-0.046, -0.046, -0.066), (0.046, 0.046, 0.066)]
                     double height = 0.04
-                    rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                     color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                         interpolation = "constant"
                     )
@@ -1122,43 +1194,52 @@ def Xform "go2_description" (
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Xform "RR_thigh" (
-                    prepend apiSchemas = ["IsaacLinkAPI"]
-                )
+                def Xform "RR_thigh"
                 {
                     quatf xformOp:orient = (1, 0, 0, 0)
                     float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, -0.0955, 0)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                    def Xform "thigh_mirror_0" (
-                        instanceable = true
-                        prepend references = @./instances.usda@</Instances/thigh_mirror_0>
+                    def Mesh "thigh_mirror_0" (
+                        prepend references = @./GeometryLibrary.usdc@</Geometry/thigh_mirror_0>
                     )
                     {
-                        quatd xformOp:orient = (1, 0, 0, 0)
-                        double3 xformOp:scale = (1, 1, 1)
+                        color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayColor:indices = None
+                        float[] primvars:displayOpacity = [1] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayOpacity:indices = None
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0, 0, 0)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Xform "thigh_mirror_1" (
-                        instanceable = true
-                        prepend references = @./instances.usda@</Instances/thigh_mirror_1>
+                    def Mesh "thigh_mirror_1" (
+                        prepend references = @./GeometryLibrary.usdc@</Geometry/thigh_mirror_1>
                     )
                     {
-                        quatd xformOp:orient = (1, 0, 0, 0)
-                        double3 xformOp:scale = (1, 1, 1)
+                        color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayColor:indices = None
+                        float[] primvars:displayOpacity = [1] (
+                            interpolation = "constant"
+                        )
+                        int[] primvars:displayOpacity:indices = None
+                        quatf xformOp:orient = (1, 0, 0, 0)
+                        float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0, 0, 0)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Cube "Box" (
-                        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                    )
+                    def Cube "Box"
                     {
                         float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                        rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                         color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                             interpolation = "constant"
                         )
@@ -1175,43 +1256,52 @@ def Xform "go2_description" (
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Xform "RR_calf" (
-                        prepend apiSchemas = ["IsaacLinkAPI"]
-                    )
+                    def Xform "RR_calf"
                     {
                         quatf xformOp:orient = (1, 0, 0, 0)
                         float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0, 0, -0.213)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                        def Xform "calf_mirror_0" (
-                            instanceable = true
-                            prepend references = @./instances.usda@</Instances/calf_mirror_0>
+                        def Mesh "calf_mirror_0" (
+                            prepend references = @./GeometryLibrary.usdc@</Geometry/calf_mirror_0>
                         )
                         {
-                            quatd xformOp:orient = (1, 0, 0, 0)
-                            double3 xformOp:scale = (1, 1, 1)
+                            color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayColor:indices = None
+                            float[] primvars:displayOpacity = [1] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayOpacity:indices = None
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "calf_mirror_1" (
-                            instanceable = true
-                            prepend references = @./instances.usda@</Instances/calf_mirror_1>
+                        def Mesh "calf_mirror_1" (
+                            prepend references = @./GeometryLibrary.usdc@</Geometry/calf_mirror_1>
                         )
                         {
-                            quatd xformOp:orient = (1, 0, 0, 0)
-                            double3 xformOp:scale = (1, 1, 1)
+                            color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayColor:indices = None
+                            float[] primvars:displayOpacity = [1] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayOpacity:indices = None
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Cube "Box" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                        )
+                        def Cube "Box"
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                 interpolation = "constant"
                             )
@@ -1229,12 +1319,10 @@ def Xform "go2_description" (
                         }
 
                         def Cube "Box_1" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                             displayName = "Box"
                         )
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                 interpolation = "constant"
                             )
@@ -1252,12 +1340,10 @@ def Xform "go2_description" (
                         }
 
                         def Cube "Box_2" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                             displayName = "Box"
                         )
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                 interpolation = "constant"
                             )
@@ -1274,32 +1360,34 @@ def Xform "go2_description" (
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "foot" (
-                            instanceable = true
-                            prepend references = @./instances.usda@</Instances/foot>
+                        def Mesh "foot" (
+                            prepend references = @./GeometryLibrary.usdc@</Geometry/foot>
                         )
                         {
-                            quatd xformOp:orient = (1, 0, 0, 0)
-                            double3 xformOp:scale = (1, 1, 1)
+                            color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayColor:indices = None
+                            float[] primvars:displayOpacity = [1] (
+                                interpolation = "constant"
+                            )
+                            int[] primvars:displayOpacity:indices = None
+                            quatf xformOp:orient = (1, 0, 0, 0)
+                            float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0, 0, -0.213)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "RR_foot" (
-                            prepend apiSchemas = ["IsaacLinkAPI"]
-                        )
+                        def Xform "RR_foot"
                         {
                             quatf xformOp:orient = (1, 0, 0, 0)
                             float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (-0.002, 0, -0.213)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                            def Sphere "RR" (
-                                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                            )
+                            def Sphere "RR"
                             {
                                 float3[] extent = [(-0.022, -0.022, -0.022), (0.022, 0.022, 0.022)]
-                                rel material:binding:physics = </go2_description/Physics/PhysicsMaterial>
                                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                     interpolation = "constant"
                                 )
@@ -1320,21 +1408,6 @@ def Xform "go2_description" (
                 }
             }
         }
-    }
-
-    def Scope "Materials"
-    {
-    }
-
-    def Scope "Physics"
-    {
-        def Material "PhysicsMaterial"
-        {
-        }
-    }
-
-    def Scope "VisualMaterials"
-    {
     }
 }
 

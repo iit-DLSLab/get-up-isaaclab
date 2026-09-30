@@ -4,52 +4,25 @@
         string creator = "MuJoCo USD Converter v0.2.0"
     }
     defaultPrim = "pegasus_description"
-    doc = """Generated from Composed Stage of root layer /tmp/tmp5xhcx9pd/pegasus_description.usdc
-
-
-Generated from Composed Stage of root layer /tmp/mjcf_import_pegasus_156c5nuj/usdex_pegasus/pegasus_description.usdc
-
-
-Generated from Composed Stage of root layer /tmp/mjcf_import_pegasus_156c5nuj/temp_pegasus/pegasus.usd
-"""
     kilogramsPerUnit = 1
     metersPerUnit = 1
-    subLayers = [
-        @./robot.usda@
-    ]
     upAxis = "Z"
 )
 
-def Xform "pegasus_description" (
-    prepend apiSchemas = ["GeomModelAPI", "IsaacRobotAPI"]
-    assetInfo = {
-        string name = "pegasus_description"
-    }
-    kind = "component"
-)
+def Xform "pegasus_description"
 {
-    float3[] extentsHint = [(-0.4794999, -0.35250002, -0.386146), (0.47950011, 0.35250002, -0.304146), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (3.4028235e38, 3.4028235e38, 3.4028235e38), (-3.4028235e38, -3.4028235e38, -3.4028235e38), (-0.514, -0.3615, -0.386146), (0.5245475, 0.3615, 0.595)]
-    custom rel isaac:physics:robotJoints
-    custom rel isaac:physics:robotLinks
-    custom token isaac:robotType = "Default"
-
     def Scope "Geometry"
     {
-        def Xform "base" (
-            prepend apiSchemas = ["IsaacLinkAPI"]
-        )
+        def Xform "base"
         {
             quatf xformOp:orient = (1, 0, 0, 0)
             float3 xformOp:scale = (1, 1, 1)
             double3 xformOp:translate = (0, 0, 0.5)
             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-            def Cube "Box" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-            )
+            def Cube "Box"
             {
                 float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -66,14 +39,11 @@ def Xform "pegasus_description" (
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
             }
 
-            def Capsule "Capsule" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-            )
+            def Capsule "Capsule"
             {
                 uniform token axis = "Z"
                 float3[] extent = [(-0.06, -0.06, -0.36), (0.06, 0.06, 0.36)]
                 double height = 0.6
-                rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -91,14 +61,12 @@ def Xform "pegasus_description" (
             }
 
             def Capsule "Capsule_1" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                 displayName = "Capsule"
             )
             {
                 uniform token axis = "Z"
                 float3[] extent = [(-0.03, -0.03, -0.33), (0.03, 0.03, 0.33)]
                 double height = 0.6
-                rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -116,14 +84,12 @@ def Xform "pegasus_description" (
             }
 
             def Capsule "Capsule_2" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                 displayName = "Capsule"
             )
             {
                 uniform token axis = "Z"
                 float3[] extent = [(-0.06, -0.06, -0.36), (0.06, 0.06, 0.36)]
                 double height = 0.6
-                rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -141,14 +107,12 @@ def Xform "pegasus_description" (
             }
 
             def Capsule "Capsule_3" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                 displayName = "Capsule"
             )
             {
                 uniform token axis = "Z"
                 float3[] extent = [(-0.06, -0.06, -0.36), (0.06, 0.06, 0.36)]
                 double height = 0.6
-                rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -166,14 +130,12 @@ def Xform "pegasus_description" (
             }
 
             def Capsule "Capsule_4" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                 displayName = "Capsule"
             )
             {
                 uniform token axis = "Z"
                 float3[] extent = [(-0.03, -0.03, -0.33), (0.03, 0.03, 0.33)]
                 double height = 0.6
-                rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -191,14 +153,12 @@ def Xform "pegasus_description" (
             }
 
             def Capsule "Capsule_5" (
-                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                 displayName = "Capsule"
             )
             {
                 uniform token axis = "Z"
                 float3[] extent = [(-0.06, -0.06, -0.36), (0.06, 0.06, 0.36)]
                 double height = 0.6
-                rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                     interpolation = "constant"
                 )
@@ -234,23 +194,18 @@ def Xform "pegasus_description" (
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
             }
 
-            def Xform "FL_hip" (
-                prepend apiSchemas = ["IsaacLinkAPI"]
-            )
+            def Xform "FL_hip"
             {
                 quatf xformOp:orient = (0.7071068, 0, 0.7071067, 0)
                 float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (0.334, 0.163, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                def Capsule "Capsule" (
-                    prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                )
+                def Capsule "Capsule"
                 {
                     uniform token axis = "Z"
                     float3[] extent = [(-0.04, -0.04, -0.08), (0.04, 0.04, 0.08)]
                     double height = 0.08
-                    rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                     color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                         interpolation = "constant"
                     )
@@ -268,14 +223,12 @@ def Xform "pegasus_description" (
                 }
 
                 def Capsule "Capsule_1" (
-                    prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                     displayName = "Capsule"
                 )
                 {
                     uniform token axis = "Z"
                     float3[] extent = [(-0.04, -0.04, -0.08), (0.04, 0.04, 0.08)]
                     double height = 0.08
-                    rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                     color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                         interpolation = "constant"
                     )
@@ -292,21 +245,16 @@ def Xform "pegasus_description" (
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Xform "FL_thigh" (
-                    prepend apiSchemas = ["IsaacLinkAPI"]
-                )
+                def Xform "FL_thigh"
                 {
                     quatf xformOp:orient = (0.7071068, -0.7071067, 0, 0)
                     float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, 0.1485, 0.1045)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                    def Cube "Box" (
-                        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                    )
+                    def Cube "Box"
                     {
                         float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                        rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                         color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                             interpolation = "constant"
                         )
@@ -323,12 +271,9 @@ def Xform "pegasus_description" (
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Sphere "Sphere" (
-                        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                    )
+                    def Sphere "Sphere"
                     {
                         float3[] extent = [(-0.05, -0.05, -0.05), (0.05, 0.05, 0.05)]
-                        rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                         color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                             interpolation = "constant"
                         )
@@ -345,21 +290,16 @@ def Xform "pegasus_description" (
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Xform "FL_calf" (
-                        prepend apiSchemas = ["IsaacLinkAPI"]
-                    )
+                    def Xform "FL_calf"
                     {
                         quatf xformOp:orient = (1, 0, 0, 0)
                         float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0.418, 0, 0)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                        def Cube "Box" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                        )
+                        def Cube "Box"
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                                 interpolation = "constant"
                             )
@@ -377,12 +317,10 @@ def Xform "pegasus_description" (
                         }
 
                         def Cube "Box_1" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                             displayName = "Box"
                         )
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                                 interpolation = "constant"
                             )
@@ -399,12 +337,9 @@ def Xform "pegasus_description" (
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Sphere "Sphere" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                        )
+                        def Sphere "Sphere"
                         {
                             float3[] extent = [(-0.041, -0.041, -0.041), (0.041, 0.041, 0.041)]
-                            rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0, 0, 0)] (
                                 interpolation = "constant"
                             )
@@ -420,21 +355,16 @@ def Xform "pegasus_description" (
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "FL_foot" (
-                            prepend apiSchemas = ["IsaacLinkAPI"]
-                        )
+                        def Xform "FL_foot"
                         {
                             quatf xformOp:orient = (1, 0, 0, 0)
                             float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0.427146, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                            def Sphere "FL" (
-                                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                            )
+                            def Sphere "FL"
                             {
                                 float3[] extent = [(-0.041, -0.041, -0.041), (0.041, 0.041, 0.041)]
-                                rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                     interpolation = "constant"
                                 )
@@ -455,23 +385,18 @@ def Xform "pegasus_description" (
                 }
             }
 
-            def Xform "FR_hip" (
-                prepend apiSchemas = ["IsaacLinkAPI"]
-            )
+            def Xform "FR_hip"
             {
                 quatf xformOp:orient = (0.7071068, 0, 0.7071067, 0)
                 float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (0.334, -0.163, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                def Capsule "Capsule" (
-                    prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                )
+                def Capsule "Capsule"
                 {
                     uniform token axis = "Z"
                     float3[] extent = [(-0.04, -0.04, -0.08), (0.04, 0.04, 0.08)]
                     double height = 0.08
-                    rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                     color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                         interpolation = "constant"
                     )
@@ -489,14 +414,12 @@ def Xform "pegasus_description" (
                 }
 
                 def Capsule "Capsule_1" (
-                    prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                     displayName = "Capsule"
                 )
                 {
                     uniform token axis = "Z"
                     float3[] extent = [(-0.04, -0.04, -0.08), (0.04, 0.04, 0.08)]
                     double height = 0.08
-                    rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                     color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                         interpolation = "constant"
                     )
@@ -513,21 +436,16 @@ def Xform "pegasus_description" (
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Xform "FR_thigh" (
-                    prepend apiSchemas = ["IsaacLinkAPI"]
-                )
+                def Xform "FR_thigh"
                 {
                     quatf xformOp:orient = (0.7071068, -0.7071067, 0, 0)
                     float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, -0.1485, 0.1045)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                    def Cube "Box" (
-                        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                    )
+                    def Cube "Box"
                     {
                         float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                        rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                         color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                             interpolation = "constant"
                         )
@@ -544,12 +462,9 @@ def Xform "pegasus_description" (
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Sphere "Sphere" (
-                        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                    )
+                    def Sphere "Sphere"
                     {
                         float3[] extent = [(-0.05, -0.05, -0.05), (0.05, 0.05, 0.05)]
-                        rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                         color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                             interpolation = "constant"
                         )
@@ -566,21 +481,16 @@ def Xform "pegasus_description" (
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Xform "FR_calf" (
-                        prepend apiSchemas = ["IsaacLinkAPI"]
-                    )
+                    def Xform "FR_calf"
                     {
                         quatf xformOp:orient = (1, 0, 0, 0)
                         float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0.418, 0, 0)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                        def Cube "Box" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                        )
+                        def Cube "Box"
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                                 interpolation = "constant"
                             )
@@ -598,12 +508,10 @@ def Xform "pegasus_description" (
                         }
 
                         def Cube "Box_1" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                             displayName = "Box"
                         )
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                                 interpolation = "constant"
                             )
@@ -620,12 +528,9 @@ def Xform "pegasus_description" (
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Sphere "Sphere" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                        )
+                        def Sphere "Sphere"
                         {
                             float3[] extent = [(-0.041, -0.041, -0.041), (0.041, 0.041, 0.041)]
-                            rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0, 0, 0)] (
                                 interpolation = "constant"
                             )
@@ -641,21 +546,16 @@ def Xform "pegasus_description" (
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "FR_foot" (
-                            prepend apiSchemas = ["IsaacLinkAPI"]
-                        )
+                        def Xform "FR_foot"
                         {
                             quatf xformOp:orient = (1, 0, 0, 0)
                             float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0.427146, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                            def Sphere "FR" (
-                                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                            )
+                            def Sphere "FR"
                             {
                                 float3[] extent = [(-0.041, -0.041, -0.041), (0.041, 0.041, 0.041)]
-                                rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                     interpolation = "constant"
                                 )
@@ -676,23 +576,18 @@ def Xform "pegasus_description" (
                 }
             }
 
-            def Xform "RL_hip" (
-                prepend apiSchemas = ["IsaacLinkAPI"]
-            )
+            def Xform "RL_hip"
             {
                 quatf xformOp:orient = (0.7071068, 0, 0.7071067, 0)
                 float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (-0.334, 0.163, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                def Capsule "Capsule" (
-                    prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                )
+                def Capsule "Capsule"
                 {
                     uniform token axis = "Z"
                     float3[] extent = [(-0.04, -0.04, -0.08), (0.04, 0.04, 0.08)]
                     double height = 0.08
-                    rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                     color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                         interpolation = "constant"
                     )
@@ -710,14 +605,12 @@ def Xform "pegasus_description" (
                 }
 
                 def Capsule "Capsule_1" (
-                    prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                     displayName = "Capsule"
                 )
                 {
                     uniform token axis = "Z"
                     float3[] extent = [(-0.04, -0.04, -0.08), (0.04, 0.04, 0.08)]
                     double height = 0.08
-                    rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                     color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                         interpolation = "constant"
                     )
@@ -734,21 +627,16 @@ def Xform "pegasus_description" (
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Xform "RL_thigh" (
-                    prepend apiSchemas = ["IsaacLinkAPI"]
-                )
+                def Xform "RL_thigh"
                 {
                     quatf xformOp:orient = (0.7071068, -0.7071067, 0, 0)
                     float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, 0.1485, -0.1045)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                    def Cube "Box" (
-                        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                    )
+                    def Cube "Box"
                     {
                         float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                        rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                         color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                             interpolation = "constant"
                         )
@@ -765,12 +653,9 @@ def Xform "pegasus_description" (
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Sphere "Sphere" (
-                        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                    )
+                    def Sphere "Sphere"
                     {
                         float3[] extent = [(-0.05, -0.05, -0.05), (0.05, 0.05, 0.05)]
-                        rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                         color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                             interpolation = "constant"
                         )
@@ -787,21 +672,16 @@ def Xform "pegasus_description" (
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Xform "RL_calf" (
-                        prepend apiSchemas = ["IsaacLinkAPI"]
-                    )
+                    def Xform "RL_calf"
                     {
                         quatf xformOp:orient = (1, 0, 0, 0)
                         float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0.418, 0, 0)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                        def Cube "Box" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                        )
+                        def Cube "Box"
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                                 interpolation = "constant"
                             )
@@ -819,12 +699,10 @@ def Xform "pegasus_description" (
                         }
 
                         def Cube "Box_1" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                             displayName = "Box"
                         )
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                                 interpolation = "constant"
                             )
@@ -841,12 +719,9 @@ def Xform "pegasus_description" (
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Sphere "Sphere" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                        )
+                        def Sphere "Sphere"
                         {
                             float3[] extent = [(-0.041, -0.041, -0.041), (0.041, 0.041, 0.041)]
-                            rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0, 0, 0)] (
                                 interpolation = "constant"
                             )
@@ -862,21 +737,16 @@ def Xform "pegasus_description" (
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "RL_foot" (
-                            prepend apiSchemas = ["IsaacLinkAPI"]
-                        )
+                        def Xform "RL_foot"
                         {
                             quatf xformOp:orient = (1, 0, 0, 0)
                             float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0.427146, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                            def Sphere "RL" (
-                                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                            )
+                            def Sphere "RL"
                             {
                                 float3[] extent = [(-0.041, -0.041, -0.041), (0.041, 0.041, 0.041)]
-                                rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                     interpolation = "constant"
                                 )
@@ -897,23 +767,18 @@ def Xform "pegasus_description" (
                 }
             }
 
-            def Xform "RR_hip" (
-                prepend apiSchemas = ["IsaacLinkAPI"]
-            )
+            def Xform "RR_hip"
             {
                 quatf xformOp:orient = (0.7071068, 0, 0.7071067, 0)
                 float3 xformOp:scale = (1, 1, 1)
                 double3 xformOp:translate = (-0.334, -0.163, 0)
                 uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                def Capsule "Capsule" (
-                    prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                )
+                def Capsule "Capsule"
                 {
                     uniform token axis = "Z"
                     float3[] extent = [(-0.04, -0.04, -0.08), (0.04, 0.04, 0.08)]
                     double height = 0.08
-                    rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                     color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                         interpolation = "constant"
                     )
@@ -931,14 +796,12 @@ def Xform "pegasus_description" (
                 }
 
                 def Capsule "Capsule_1" (
-                    prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                     displayName = "Capsule"
                 )
                 {
                     uniform token axis = "Z"
                     float3[] extent = [(-0.04, -0.04, -0.08), (0.04, 0.04, 0.08)]
                     double height = 0.08
-                    rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                     color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                         interpolation = "constant"
                     )
@@ -955,21 +818,16 @@ def Xform "pegasus_description" (
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                 }
 
-                def Xform "RR_thigh" (
-                    prepend apiSchemas = ["IsaacLinkAPI"]
-                )
+                def Xform "RR_thigh"
                 {
                     quatf xformOp:orient = (0.7071068, -0.7071067, 0, 0)
                     float3 xformOp:scale = (1, 1, 1)
                     double3 xformOp:translate = (0, -0.1485, -0.1045)
                     uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                    def Cube "Box" (
-                        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                    )
+                    def Cube "Box"
                     {
                         float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                        rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                         color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                             interpolation = "constant"
                         )
@@ -986,12 +844,9 @@ def Xform "pegasus_description" (
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Sphere "Sphere" (
-                        prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                    )
+                    def Sphere "Sphere"
                     {
                         float3[] extent = [(-0.05, -0.05, -0.05), (0.05, 0.05, 0.05)]
-                        rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                         color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                             interpolation = "constant"
                         )
@@ -1008,21 +863,16 @@ def Xform "pegasus_description" (
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                     }
 
-                    def Xform "RR_calf" (
-                        prepend apiSchemas = ["IsaacLinkAPI"]
-                    )
+                    def Xform "RR_calf"
                     {
                         quatf xformOp:orient = (1, 0, 0, 0)
                         float3 xformOp:scale = (1, 1, 1)
                         double3 xformOp:translate = (0.418, 0, 0)
                         uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                        def Cube "Box" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                        )
+                        def Cube "Box"
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                                 interpolation = "constant"
                             )
@@ -1040,12 +890,10 @@ def Xform "pegasus_description" (
                         }
 
                         def Cube "Box_1" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
                             displayName = "Box"
                         )
                         {
                             float3[] extent = [(-1, -1, -1), (1, 1, 1)]
-                            rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0.913725, 0.913725, 0.847059)] (
                                 interpolation = "constant"
                             )
@@ -1062,12 +910,9 @@ def Xform "pegasus_description" (
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Sphere "Sphere" (
-                            prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                        )
+                        def Sphere "Sphere"
                         {
                             float3[] extent = [(-0.041, -0.041, -0.041), (0.041, 0.041, 0.041)]
-                            rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                             color3f[] primvars:displayColor = [(0, 0, 0)] (
                                 interpolation = "constant"
                             )
@@ -1083,21 +928,16 @@ def Xform "pegasus_description" (
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
                         }
 
-                        def Xform "RR_foot" (
-                            prepend apiSchemas = ["IsaacLinkAPI"]
-                        )
+                        def Xform "RR_foot"
                         {
                             quatf xformOp:orient = (1, 0, 0, 0)
                             float3 xformOp:scale = (1, 1, 1)
                             double3 xformOp:translate = (0.427146, 0, 0)
                             uniform token[] xformOpOrder = ["xformOp:translate", "xformOp:orient", "xformOp:scale"]
 
-                            def Sphere "RR" (
-                                prepend apiSchemas = ["PhysicsCollisionAPI", "MaterialBindingAPI"]
-                            )
+                            def Sphere "RR"
                             {
                                 float3[] extent = [(-0.041, -0.041, -0.041), (0.041, 0.041, 0.041)]
-                                rel material:binding:physics = </pegasus_description/Physics/PhysicsMaterial>
                                 color3f[] primvars:displayColor = [(0.5, 0.5, 0.5)] (
                                     interpolation = "constant"
                                 )
@@ -1117,13 +957,6 @@ def Xform "pegasus_description" (
                     }
                 }
             }
-        }
-    }
-
-    def Scope "Physics"
-    {
-        def Material "PhysicsMaterial"
-        {
         }
     }
 }

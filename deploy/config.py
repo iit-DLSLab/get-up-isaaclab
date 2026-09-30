@@ -24,7 +24,7 @@ elif(robot == "pegasus"):
     Kp_stand_up_and_down = 200.
     Kd_stand_up_and_down = 10.
 
-    policy_folder_path = dir_path + "/../tested_policies/" + robot + "/2026-08-06_11-36-29"
+    policy_folder_path = dir_path + "/../tested_policies/" + robot + "/rough"
 
 else:
     raise ValueError(f"Robot {robot} not supported")

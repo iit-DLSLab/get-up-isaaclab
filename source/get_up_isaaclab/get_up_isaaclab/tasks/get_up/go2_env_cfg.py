@@ -190,7 +190,7 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
 
     # we add a height scanner for perceptive getup
     height_scanner = RayCasterCfg(
-        prim_path="/World/envs/env_.*/Robot/base",
+        prim_path="/World/envs/env_.*/Robot/Geometry/base",
         offset=RayCasterCfg.OffsetCfg(pos=(0.0, 0.0, 0.0)),
         ray_alignment='yaw',
         pattern_cfg=patterns.GridPatternCfg(resolution=0.2, size=[0.6, 0.6]),
@@ -201,7 +201,7 @@ class Go2FlatEnvCfg(DirectRLEnvCfg):
 
     # an imu sensor in case we don't want any state estimator (for now we can't use sites from the xml)
     imu = ImuCfg(
-        prim_path="/World/envs/env_.*/Robot/base", 
+        prim_path="/World/envs/env_.*/Robot/Geometry/base", 
         offset=ImuCfg.OffsetCfg(
             pos=(-0.02557, 0, 0.04232)
         ), 
