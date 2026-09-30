@@ -16,7 +16,7 @@ from isaaclab.envs import DirectRLEnv, DirectRLEnvCfg
 from isaaclab.managers import EventTermCfg as EventTerm
 from isaaclab.managers import SceneEntityCfg
 from isaaclab.scene import InteractiveSceneCfg
-from isaaclab.sensors import ContactSensor, ContactSensorCfg, RayCaster, RayCasterCfg, RayCasterCamera, RayCasterCameraCfg, MultiMeshRayCasterCamera, MultiMeshRayCasterCameraCfg, TiledCameraCfg, TiledCamera, patterns, Imu
+from isaaclab.sensors import ContactSensor, ContactSensorCfg, RayCaster, RayCasterCfg, RayCasterCamera, RayCasterCameraCfg, MultiMeshRayCasterCamera, MultiMeshRayCasterCameraCfg, TiledCameraCfg, TiledCamera, patterns, Imu, Pva, PvaCfg
 from isaaclab.sim import SimulationCfg
 from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.utils.configclass import configclass
@@ -127,6 +127,17 @@ class GetUpEnv(DirectRLEnv):
         self._imu = Imu(self.cfg.imu)
         self.scene.sensors["imu"] = self._imu
 
+        # Report ideal projected gravity in the same frame as the IMU measurements.
+        self._pva = Pva(PvaCfg(
+            prim_path=self.cfg.imu.prim_path,
+            update_period=self.cfg.imu.update_period,
+            offset=PvaCfg.OffsetCfg(
+                pos=self.cfg.imu.offset.pos,
+                rot=self.cfg.imu.offset.rot,
+            ),
+        ))
+        self.scene.sensors["pva"] = self._pva
+
         self.cfg.terrain.num_envs = self.scene.cfg.num_envs
         self.cfg.terrain.env_spacing = self.scene.cfg.env_spacing
         self._terrain = self.cfg.terrain.class_type(self.cfg.terrain)
@@ -181,7 +192,7 @@ class GetUpEnv(DirectRLEnv):
                 tensor
                 for tensor in (
                     self._imu.data.ang_vel_b,
-                    self._robot.data.projected_gravity_b,
+                    self._pva.data.projected_gravity_b,
                     self._robot.data.joint_pos[:, self._ids_joints_order] - self._robot.data.default_joint_pos[:, self._ids_joints_order],
                     self._robot.data.joint_vel[:, self._ids_joints_order],
                     self._actions,
@@ -437,7 +448,7 @@ class GetUpEnv(DirectRLEnv):
                 for tensor in (
                     self._imu.data.lin_acc_b,
                     self._imu.data.ang_vel_b,
-                    self._robot.data.projected_gravity_b,
+                    self._pva.data.projected_gravity_b,
                     joint_pos_error_ordered,
                     joint_vel_ordered * self.cfg.observation_joint_vel_scale,
                     self._actions,
