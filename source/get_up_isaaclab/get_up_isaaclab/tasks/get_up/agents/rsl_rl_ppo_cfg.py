@@ -10,6 +10,8 @@ from isaaclab_rl.rsl_rl import RslRlMLPModelCfg, RslRlOnPolicyRunnerCfg, RslRlPp
 from pathlib import Path
 from dataclasses import MISSING
 
+from . import morphosymm_cfg
+
 
 @configclass
 class FlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
@@ -43,6 +45,9 @@ class FlatPPORunnerCfg(RslRlOnPolicyRunnerCfg):
         desired_kl=0.01,
         max_grad_norm=1.0,
     )
+
+    # Morphosymm-rsl-rl Related Stuff
+    morphologycal_symmetries_cfg = morphosymm_cfg.morphologycal_symmetries_cfg
 
  
 
@@ -78,4 +83,7 @@ class RoughPPORunnerCfg(RslRlOnPolicyRunnerCfg):
         desired_kl=0.01,
         max_grad_norm=1.0,
     )
+
+    # Morphosymm-rsl-rl Related Stuff
+    morphologycal_symmetries_cfg = morphosymm_cfg.morphologycal_symmetries_cfg
 

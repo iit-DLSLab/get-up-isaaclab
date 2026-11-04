@@ -11,7 +11,7 @@ import torch
 import isaaclab.envs.mdp as mdp
 import isaaclab.sim as sim_utils
 import isaaclab.utils.math as math_utils
-from isaaclab.assets import Articulation, ArticulationCfg
+from isaaclab.assets import Articulation, ArticulationCfg, AssetBaseCfg
 from isaaclab.envs import DirectRLEnv, DirectRLEnvCfg
 from isaaclab.managers import EventTermCfg as EventTerm
 from isaaclab.managers import SceneEntityCfg
@@ -21,7 +21,6 @@ from isaaclab.sim import SimulationCfg
 from isaaclab.terrains import TerrainImporterCfg
 from isaaclab.utils.configclass import configclass
 
-from isaaclab import cloner
 
 from .go2_env_cfg import Go2FlatEnvCfg, Go2RoughBlindEnvCfg
 from .pegasus_env_cfg import PegasusFlatEnvCfg, PegasusRoughBlindEnvCfg
@@ -40,6 +39,9 @@ class GetUpEnv(DirectRLEnv):
     cfg: Go2FlatEnvCfg | Go2RoughBlindEnvCfg | PegasusFlatEnvCfg | PegasusRoughBlindEnvCfg
 
     def __init__(self, cfg: Go2FlatEnvCfg | Go2RoughBlindEnvCfg | PegasusFlatEnvCfg | PegasusRoughBlindEnvCfg, render_mode: str | None = None, **kwargs):
+        # Isaac Lab 3.0: the InteractiveScene owns the construction and the cloning of the assets and sensors,
+        # so they must be declared on cfg.scene before the scene is created
+        self._populate_scene_cfg(cfg)
         super().__init__(cfg, render_mode, **kwargs)
 
         # Joint position command (deviation from default joint positions)
@@ -113,53 +115,45 @@ class GetUpEnv(DirectRLEnv):
             self._nominal_actuator_damping[joint_type] = actuator.damping.clone()
 
 
-    def _setup_scene(self):
-        self._robot = Articulation(self.cfg.robot)
-        self.scene.articulations["robot"] = self._robot
-        self._contact_sensor = ContactSensor(self.cfg.contact_sensor)
-        self.scene.sensors["contact_sensor"] = self._contact_sensor
+    @staticmethod
+    def _populate_scene_cfg(cfg):
+        """Declare the robot, the sensors, the terrain and the light on cfg.scene.
 
+        In Isaac Lab 3.0 the InteractiveScene builds the clone plan from the declared entities, constructs them and
+        replicates env_0 (including the PhysX collision filtering with the terrain). The entities keep the names used
+        so far, and the env cfg fields (cfg.robot, cfg.terrain, ...) are left in place, so the rest of the code and the
+        hydra overrides are unchanged.
+        """
+        scene = cfg.scene
+        scene.robot = cfg.robot
+        scene.contact_sensor = cfg.contact_sensor
         # we add a height scanner for the proprioceptive getup
-        self._height_scanner = RayCaster(self.cfg.height_scanner)
-        self.scene.sensors["height_scanner"] = self._height_scanner
+        scene.height_scanner = cfg.height_scanner
 
         # we add an imu
-        self._imu = Imu(self.cfg.imu)
-        self.scene.sensors["imu"] = self._imu
-
+        scene.imu = cfg.imu
         # Report ideal projected gravity in the same frame as the IMU measurements.
-        self._pva = Pva(PvaCfg(
-            prim_path=self.cfg.imu.prim_path,
-            update_period=self.cfg.imu.update_period,
-            offset=PvaCfg.OffsetCfg(
-                pos=self.cfg.imu.offset.pos,
-                rot=self.cfg.imu.offset.rot,
-            ),
-        ))
-        self.scene.sensors["pva"] = self._pva
-
-        self.cfg.terrain.num_envs = self.scene.cfg.num_envs
-        self.cfg.terrain.env_spacing = self.scene.cfg.env_spacing
-        self._terrain = self.cfg.terrain.class_type(self.cfg.terrain)
-        
-        # clone and replicate environments
-        src, dest = "/World/envs/env_0", "/World/envs/env_{}"
-        positions = cloner.grid_transforms(
-            self.scene.num_envs, self.scene.cfg.env_spacing, device=self.device
-        )[0]
-        global_paths = (self.cfg.terrain.prim_path,)
-        plan = cloner.clone_plan_from_env_0(
-            src, dest, self.scene.num_envs, self.device, positions, global_paths=global_paths
+        scene.pva = PvaCfg(
+            prim_path=cfg.imu.prim_path,
+            update_period=cfg.imu.update_period,
+            offset=PvaCfg.OffsetCfg(pos=cfg.imu.offset.pos, rot=cfg.imu.offset.rot),
         )
-        cloner.replicate(plan, stage=self.scene.stage)
 
-        # PhysX replication requires explicit collision filtering between environments.
-        if "physx" in self.scene.physics_backend:
-            self.scene.filter_collisions(global_prim_paths=[self.cfg.terrain.prim_path])
-
+        # the scene sets num_envs and env_spacing of the terrain
+        scene.terrain = cfg.terrain
         # add lights
-        light_cfg = sim_utils.DomeLightCfg(intensity=2000.0, color=(0.75, 0.75, 0.75))
-        light_cfg.func("/World/Light", light_cfg)
+        scene.light = AssetBaseCfg(
+            prim_path="/World/Light", spawn=sim_utils.DomeLightCfg(intensity=2000.0, color=(0.75, 0.75, 0.75))
+        )
+
+    def _setup_scene(self):
+        # The entities are constructed and cloned by the InteractiveScene, see _populate_scene_cfg
+        self._robot = self.scene["robot"]
+        self._contact_sensor = self.scene["contact_sensor"]
+        self._height_scanner = self.scene["height_scanner"]
+        self._imu = self.scene["imu"]
+        self._pva = self.scene["pva"]
+        self._terrain = self.scene.terrain
 
 
     def _pre_physics_step(self, actions: torch.Tensor):

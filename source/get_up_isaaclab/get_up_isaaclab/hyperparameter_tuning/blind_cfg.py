@@ -32,7 +32,7 @@ class BlindJobCfg(tuner.JobCfg):
         cfg = util.populate_isaac_ray_cfg_args(cfg)
 
         # Basic configuration
-        cfg["runner_args"]["headless_singleton"] = "--headless"
+        # Isaac Lab 3.0 runs headless by default (no --headless flag): a visualizer is enabled only with --visualizer
         
         # RSL-RL specific configurations
         cfg["hydra_args"]["agent.max_iterations"] = 2000
