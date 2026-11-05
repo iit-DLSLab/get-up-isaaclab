@@ -1,0 +1,80 @@
+[workspace]
+name = "get_up_isaaclab_env"
+platforms = [
+  "linux-64",
+  # Isaac Lab 3 Omniverse wheels are manylinux_2_35 (Ubuntu 22.04+)
+  { name = "linux-64-glibc-2-35", platform = "linux-64", glibc = "2.35" },
+]
+channels = ["conda-forge", "nvidia"]
+
+[feature.common]
+platforms = ["linux-64"]
+
+[feature.common.dependencies]
+pip = "*"
+python = "*"
+numpy = "*"
+cuda-nvcc = "*"
+compilers = "*"
+cmake = "*"
+pkg-config = "*"
+make = "*"
+ninja = "*"
+colcon-common-extensions = "*"
+catkin_tools = "*"
+rosdep = "*"
+tqdm = "*"
+gymnasium = "*"
+
+[feature.common.pypi-dependencies]
+readchar = "*"
+onnxruntime = "*"
+torch = "*"
+mujoco = "*"
+scipy = "*"
+
+[feature.common.activation.env]
+ROS_LOCALHOST_ONLY = "1"
+
+[feature.humble]
+channels = ["https://repo.prefix.dev/robostack-staging"]
+
+[feature.humble.dependencies]
+ros-humble-desktop = "*"
+ros-humble-rmw-cyclonedds-cpp = "*"
+ros-humble-rosidl-generator-dds-idl = "*"
+ros-humble-plotjuggler-ros = "*"
+
+[feature.lyrical]
+channels = ["https://repo.prefix.dev/robostack-lyrical"]
+
+[feature.lyrical.dependencies]
+ros-lyrical-desktop = "*"
+ros-lyrical-rmw-cyclonedds-cpp = "*"
+ros-lyrical-plotjuggler-ros = "*"
+
+# ---------------------------------------------------------------------------
+# Training: Isaac Lab release from PyPI (lightweight, no Isaac Sim / Kit)
+# ---------------------------------------------------------------------------
+[feature.train]
+platforms = ["linux-64-glibc-2-35"]
+
+[feature.train.dependencies]
+python = "3.12.*"
+pip = "*"
+setuptools = "<82"  # torch 2.11 requires setuptools<82
+
+[feature.train.pypi-dependencies]
+isaaclab = { version = "==3.0.0", extras = ["all", "wandb"] }
+get_up_isaaclab = { path = "source/get_up_isaaclab", editable = true }
+
+[feature.train.pypi-options]
+extra-index-urls = ["https://pypi.nvidia.com", "https://download.pytorch.org/whl/cu130"]
+index-strategy = "unsafe-best-match"
+# Mirrors Isaac Lab's [tool.uv].override-dependencies (not inherited from the wheel)
+dependency-overrides = { packaging = ">=20,<27" }
+
+[environments]
+train = ["train"]
+humble = ["common", "humble"]
+lyrical = ["common", "lyrical"]

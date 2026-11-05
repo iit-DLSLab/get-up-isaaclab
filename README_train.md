@@ -1,6 +1,22 @@
 ## Installation Train
 
-1. Install Isaac Lab by following the [installation guide](https://github.com/isaac-sim/IsaacLab). We recommend using the conda installation as it simplifies calling Python scripts from the terminal.
+### Option A: pixi (Isaac Lab 3.0 release, recommended)
+
+1. Install [pixi](https://pixi.prefix.dev/latest/installation/) and git-lfs (`sudo apt install git-lfs`), then clone this repository.
+
+2. From anywhere inside the repo:
+
+```bash
+pixi shell -e train
+```
+
+This creates an environment with Python 3.12 and `isaaclab[all,wandb]==3.0.0` from PyPI (Newton backend, no Isaac Sim), and installs this repo in editable mode. It requires Ubuntu 22.04 or newer (glibc >= 2.35).
+
+If you change the dependencies in `source/get_up_isaaclab/setup.py`, run `pixi update -e train get-up-isaaclab`.
+
+### Option B: your own Isaac Lab installation
+
+1. Install Isaac Lab by following the [installation guide](https://github.com/isaac-sim/IsaacLab).
 
 2. Install git for very large file
 ```bash
@@ -15,8 +31,6 @@ sudo apt install git-lfs
 ```bash
 python -m pip install -e source/get_up_isaaclab
 ```
-
-
 
 ## Run a train/play in IsaacLab
 
