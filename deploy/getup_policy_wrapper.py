@@ -11,7 +11,6 @@ np.set_printoptions(precision=3, suppress=True)
 from tqdm import tqdm
 import mujoco
 import onnxruntime as ort
-import torch
 
 import config
 
@@ -21,7 +20,23 @@ import os
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(dir_path+"/../")
 sys.path.append(dir_path+"/../source/get_up_isaaclab/get_up_isaaclab/tasks/")
-from supervised_learning_networks import load_network
+
+
+def load_supervised_network(checkpoint_path):
+    """Load a supervised network (concurrent state estimator, RMA) as a function obs -> prediction.
+
+    Uses the ONNX export saved next to the checkpoint (same name, .onnx) with onnxruntime.
+    """
+    onnx_path = os.path.splitext(checkpoint_path)[0] + ".onnx"
+    options = ort.SessionOptions()
+    # Small network called once per step: one thread, no worker threads spinning between the calls
+    options.intra_op_num_threads = 1
+    options.inter_op_num_threads = 1
+    options.add_session_config_entry("session.intra_op.allow_spinning", "0")
+    session = ort.InferenceSession(onnx_path, sess_options=options, providers=["CPUExecutionProvider"])
+    input_name = session.get_inputs()[0].name
+    print(f"Network loaded from {onnx_path}")
+    return lambda obs: session.run(None, {input_name: np.asarray(obs, dtype=np.float32).reshape(1, -1)})[0].squeeze()
 
 
 class GetUpPolicyWrapper:
@@ -71,7 +86,7 @@ class GetUpPolicyWrapper:
 
         # RMA
         if(config.training_env["use_rma"] == True):
-            self._rma_network = load_network(config.rma_network_path, device='cpu')
+            self._rma_network = load_supervised_network(config.rma_network_path)
             self._observation_history_rma = np.zeros((self.history_length, single_observation_space), dtype=np.float32)
 
 
@@ -80,22 +95,15 @@ class GetUpPolicyWrapper:
 
 
     def _get_projected_gravity(self, quat_wxyz):        
-        # Get the projected gravity in the base frame
-        GRAVITY_VEC_W = torch.tensor((0, 0, -9.81), dtype=torch.double)
-        GRAVITY_VEC_W = GRAVITY_VEC_W / GRAVITY_VEC_W.norm(p=2, dim=-1).clamp(min=1e-9, max=None).unsqueeze(-1)
-        q = torch.tensor(quat_wxyz).view(1, 4)
-        v = GRAVITY_VEC_W.clone().detach().view(1, 3)
-        q_w = q[..., 0]
-        q_vec = q[..., 1:]
-        a = v * (2.0 * q_w**2 - 1.0).unsqueeze(-1)
-        b = torch.cross(q_vec, v, dim=-1) * q_w.unsqueeze(-1) * 2.0
-        # for two-dimensional tensors, bmm is faster than einsum
-        if q_vec.dim() == 2:
-            c = q_vec * torch.bmm(q_vec.view(q.shape[0], 1, 3), v.view(q.shape[0], 3, 1)).squeeze(-1) * 2.0
-        else:
-            c = q_vec * torch.einsum("...i,...i->...", q_vec, v).unsqueeze(-1) * 2.0
-        projected_gravity =  a - b + c
-        return projected_gravity.numpy().flatten()
+        # Get the projected gravity in the base frame: the unit gravity vector rotated by the inverse of quat_wxyz
+        # (same formula as quat_rotate_inverse of Isaac Lab)
+        v = np.array([0.0, 0.0, -1.0])
+        q_w = float(quat_wxyz[0])
+        q_vec = np.asarray(quat_wxyz[1:], dtype=np.float64)
+        a = v * (2.0 * q_w**2 - 1.0)
+        b = np.cross(q_vec, v) * q_w * 2.0
+        c = q_vec * np.dot(q_vec, v) * 2.0
+        return a - b + c
 
 
     def compute_control(self,

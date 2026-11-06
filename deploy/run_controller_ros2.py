@@ -37,6 +37,7 @@ from sensor_msgs.msg import Joy
 from dls2_interface.msg import BaseState, BlindState, Imu, ControlSignal
 
 import time
+import gc
 import numpy as np
 np.set_printoptions(precision=3, suppress=True)
 
@@ -227,7 +228,8 @@ class ControllerROS2(Node):
         self.mjData.qpos[7:19] = copy.deepcopy(self.joint_positions)
         self.mjData.qvel[6:18] = copy.deepcopy(self.joint_velocities)
         self.mjModel.opt.timestep = simulation_dt
-        mujoco.mj_forward(self.mjModel, self.mjData)
+        # No mj_forward here: the controller only reads qpos/qvel, and the viewer
+        # recomputes the kinematics on its own copy in sync(state_only=True)
 
         # Safety check for joystick timeout
         if(self.last_joy_time is not None and time.time() - self.last_joy_time > 1.0):
@@ -289,10 +291,24 @@ class ControllerROS2(Node):
             RENDER_FREQ = 30  # Hz
             if time.time() - self.last_render_time > 1.0 / RENDER_FREQ:
                 self.viewer.cam.lookat[:] = mujoco_utils.base_pos(self.mjData)
-                self.viewer.sync()
+                # state_only: copy only the state (qpos, qvel, ...) and let the viewer run mj_forward
+                self.viewer.sync(state_only=True)
                 self.last_render_time = time.time()
 
 
+
+
+def create_executor():
+    # EventsExecutor dispatches the callbacks in C++ (rclpy >= Kilted), with much less overhead than the
+    # default SingleThreadedExecutor. It does not exist on Humble, where we fall back to SingleThreadedExecutor
+    try:
+        from rclpy.experimental import EventsExecutor
+        print("Using EventsExecutor")
+        return EventsExecutor()
+    except ImportError:
+        from rclpy.executors import SingleThreadedExecutor
+        print("EventsExecutor not available in this ROS 2 distro, using SingleThreadedExecutor")
+        return SingleThreadedExecutor()
 
 
 #---------------------------
@@ -302,7 +318,12 @@ if __name__ == '__main__':
 
     rclpy.init()
     controller_ros2_node = ControllerROS2()
-    rclpy.spin(controller_ros2_node)
+    # Move everything allocated at startup (modules, model, policy, node) out of the garbage collector:
+    # otherwise its full collections scan all of them and stall the control loop for tens of ms
+    gc.collect()
+    gc.freeze()
+
+    rclpy.spin(controller_ros2_node, create_executor())
 
     controller_ros2_node.destroy_node()
     rclpy.shutdown()

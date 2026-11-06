@@ -211,9 +211,39 @@ class SimpleNN(torch.nn.Module):
         }, filepath)
         
         print(f"Network saved to {filepath}")
-        
+
         # Move model back to original device
         #self.to(original_device)
+
+        # Save also the ONNX export next to the checkpoint, used at deploy time with onnxruntime (no torch needed)
+        try:
+            onnx_path = self.export_onnx(filepath)
+            print(f"Network exported to {onnx_path}")
+        except Exception as error:  # the checkpoint is already saved: do not stop the training for this
+            print(f"Warning: ONNX export of {filepath} failed: {error}")
+
+    def export_onnx(self, filepath):
+        """Export the network to ONNX, next to filepath with the .onnx extension.
+
+        A CPU copy in eval mode is exported, so the network being trained is neither moved nor switched to eval.
+        Same settings as the policy export of isaaclab_rl: opset 18, input "obs" with a batch of 1, but with the
+        weights inside the .onnx file (no separate .onnx.data to copy along).
+        """
+        onnx_path = os.path.splitext(filepath)[0] + ".onnx"
+        export_model = SimpleNN(self.fc1.in_features, self.fc4.out_features)
+        export_model.load_state_dict({name: value.detach().cpu() for name, value in self.state_dict().items()})
+        export_model.eval()
+        torch.onnx.export(
+            export_model,
+            torch.zeros(1, self.fc1.in_features),
+            onnx_path,
+            export_params=True,
+            opset_version=18,
+            input_names=["obs"],
+            output_names=["output"],
+            external_data=False,
+        )
+        return onnx_path
 
 
 def load_network(filepath, device='cpu'):
